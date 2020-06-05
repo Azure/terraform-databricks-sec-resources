@@ -1,14 +1,21 @@
+## Requirements
 
-# Contributing
+No requirements.
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
-Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
-the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
+## Providers
 
-When you submit a pull request, a CLA bot will automatically determine whether you need to provide
-a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions
-provided by the bot. You will only need to do this once across all repos using our CLA.
+| Name | Version |
+|------|---------|
+| databricks | n/a |
 
-This project has adopted the [Microsoft Open Source Code of Conduct](https://opensource.microsoft.com/codeofconduct/).
-For more information see the [Code of Conduct FAQ](https://opensource.microsoft.com/codeofconduct/faq/) or
-contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any additional questions or comments.
+## Inputs
+
+| Name | Description | Type | Default | Required |
+|------|-------------|------|---------|:--------:|
+| databricks\_api\_token | A PAT or other valid token to authorise interaction with the Databricks host. | `string` | n/a | yes |
+| databricks\_host | URL to the Databricks workspace to interact with. | `string` | n/a | yes |
+
+## Outputs
+
+No output.
+
