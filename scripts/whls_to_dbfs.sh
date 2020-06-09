@@ -9,9 +9,10 @@ echo "Downloading custom whls for clusters..."
 
 mkdir ./custom-whls && cd ./custom-whls
 
-#TODO: ensure checksum validation on all downloads
 # First argument should be a list of remote URIs
-for uri in $1
+IFS=', '
+read -ra ADDR <<< "$1"
+for uri in "${ADDR[@]}"; 
 do
     curl --remote-name $uri
 done
@@ -22,8 +23,8 @@ echo "Downloaded. Uploading to dbfs..."
 
 # Login to Databricks CLI (without prompt or config file)
 
-export DATABRICKS_ADDRESS=$2
-export DATABRICKS_API_TOKEN=$3
+export DATABRICKS_ADDRESS=$2 # host
+export DATABRICKS_API_TOKEN=$3 # PAT
 
 # Upload ./custom-whls to dbfs
 
