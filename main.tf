@@ -3,19 +3,7 @@ provider "databricks" {
   token = var.databricks_api_token
 }
 
-resource "databricks_scim_group" "privileged-user-group" {
-  display_name = "Privileged user group"
-}
 
-resource "databricks_secret_scope" "privileged-scope" {
-  name = "privileged-secret-scope"
-}
-
-resource "databricks_secret_acl" "privileged-acl" {
-   principal = "Privileged user group"
-   permission = "READ"
-   scope = databricks_secret_scope.privileged-scope.name
-}
 
 resource "databricks_cluster" "standard_cluster" {
   cluster_name  = "standard-cluster"
@@ -25,6 +13,10 @@ resource "databricks_cluster" "standard_cluster" {
     min_workers = 1
     max_workers = 3
   }
+  library_whl {
+    path = "dbfs:/custom-whls/my_whl.whl"
+  }
+
 }
 
 # Create high concurrency cluster with AAD credential passthrough enabled
