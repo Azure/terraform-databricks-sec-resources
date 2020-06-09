@@ -28,7 +28,8 @@ done
 cd ..
 
 # Append whl filenames to file
-echo $TF_VAR_whlnames >> "whl_names.txt"
+> "whl_names.txt"
+echo $whlnames >> "whl_names.txt"
 
 echo "Downloaded. Uploading to dbfs..."
 

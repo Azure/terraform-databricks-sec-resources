@@ -13,7 +13,7 @@ resource "null_resource" "main" {
 }
 
 locals {
-  package_names = toset(split("\n", file("./scripts/whl_names.txt")))
+  package_names = split("\n", file("./scripts/whl_names.txt"))
 }
 
 resource "databricks_cluster" "standard_cluster" {
@@ -25,7 +25,7 @@ resource "databricks_cluster" "standard_cluster" {
     max_workers = 3
   }
   library_whl {
-    path = "dbfs:/custom-whls/my_whl.whl"
+    path = format("%s/%s", "dbfs:/custom-whls/", local.package_names[0])
   }
 
 }
