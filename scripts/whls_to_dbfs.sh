@@ -10,14 +10,25 @@ echo "Downloading custom whls for clusters..."
 mkdir ./custom-whls && cd ./custom-whls
 
 # First argument should be a list of remote URIs
+whlnames=()
+
 IFS=', '
 read -ra ADDR <<< "$1"
 for uri in "${ADDR[@]}"; 
 do
+    # Download whl
     curl --remote-name $uri
+
+    #TODO: checksum validation or quit
+
+    # Gather whl filenames for retrieval
+    whlnames+=($(basename $uri))
 done
 
 cd ..
+
+# Append whl filenames to file
+echo $TF_VAR_whlnames >> "whl_names.txt"
 
 echo "Downloaded. Uploading to dbfs..."
 

@@ -4,7 +4,6 @@ provider "databricks" {
 }
 
 resource "null_resource" "main" {
-  # TODO: can't trigger on a list of strings
   triggers = {
      cluster_default_packages = join(", ", var.cluster_default_packages)
   }
