@@ -3,7 +3,14 @@ provider "databricks" {
   token = var.databricks_api_token
 }
 
-
+# resource "null_resource" "main" {
+#   triggers = {
+#     custom_whl_script = var.whl_upload_script_path
+#   }
+#   provisioner "local-exec" {
+#     command = "${var.whl_upload_script_path} ${var.databricks_host} ${var.databricks_api_token}"
+#   }
+# }
 
 resource "databricks_cluster" "standard_cluster" {
   cluster_name  = "standard-cluster"

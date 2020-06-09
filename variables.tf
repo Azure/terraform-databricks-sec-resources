@@ -16,3 +16,8 @@ variable "cluster_default_packages" {
     description = "List of names or urls for any custom Python packages (.whl) to install on clusters by default."
     default = []
 }
+
+variable "whl_upload_script_path" {
+    type = string
+    description = "Path to a bash script which downloads the whls in cluster_default_packages, and uploads them to dbfs."
+}

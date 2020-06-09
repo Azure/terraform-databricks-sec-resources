@@ -23,11 +23,13 @@ echo "Downloaded. Uploading to dbfs..."
 
 # Login to Databricks CLI (without prompt or config file)
 
-export DATABRICKS_HOST=$2
-export DATABRICKS_TOKEN=$3
+export DATABRICKS_ADDRESS=$2
+export DATABRICKS_API_TOKEN=$3
 
 # Upload ./custom-whls to dbfs
 
 dbfs cp -r ./custom-whls dbfs:/custom-whls
+
+echo "Uploaded!"
 
 rm -rf ./custom-whls
