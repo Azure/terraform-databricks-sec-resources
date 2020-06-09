@@ -10,7 +10,6 @@ echo "Downloading custom whls for clusters..."
 mkdir ./custom-whls && cd ./custom-whls
 
 #TODO: ensure checksum validation on all downloads
-#TODO: if uris changes, this should rerun - trigger on that TF variable
 # First argument should be a list of remote URIs
 for uri in $1
 do
