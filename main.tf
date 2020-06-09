@@ -12,6 +12,10 @@ resource "null_resource" "main" {
   }
 }
 
+locals {
+  package_names = toset(split("\n", file("./scripts/whl_names.txt")))
+}
+
 resource "databricks_cluster" "standard_cluster" {
   cluster_name  = "standard-cluster"
   spark_version = "6.4.x-scala2.11"

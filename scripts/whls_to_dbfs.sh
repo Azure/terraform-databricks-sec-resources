@@ -19,7 +19,7 @@ do
     # Download whl
     curl --remote-name $uri
 
-    #TODO: checksum validation or quit
+    #TODO: successful checksum validation or quit
 
     # Gather whl filenames for retrieval
     whlnames+=($(basename $uri))
