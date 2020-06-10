@@ -7,11 +7,12 @@
 
 echo "Downloading custom whls for clusters..."
 
+# Ready output file
+> "whl_names.txt"
+
 mkdir ./custom-whls && cd ./custom-whls
 
-# First argument should be a list of remote URIs
-whlnames=()
-
+# First argument should be a comma-separated string of remote URIs
 IFS=', '
 read -ra ADDR <<< "$1"
 for uri in "${ADDR[@]}"; 
@@ -21,26 +22,20 @@ do
 
     #TODO: successful checksum validation or quit
 
-    # Gather whl filenames for retrieval
-    whlnames+=($(basename $uri))
+    # Append whl filenames to output
+    echo $(basename $uri) >> "../whl_names.txt"
 done
 
 cd ..
 
-# Append whl filenames to file
-> "whl_names.txt"
-echo $whlnames >> "whl_names.txt"
-
 echo "Downloaded. Uploading to dbfs..."
 
-# Login to Databricks CLI (without prompt or config file)
-
+# dbfs auth
 export DATABRICKS_ADDRESS=$2 # host
 export DATABRICKS_API_TOKEN=$3 # PAT
 
 # Upload ./custom-whls to dbfs
-
-dbfs cp -r ./custom-whls dbfs:/custom-whls
+dbfs cp -r ./custom-whls dbfs:/mnt/custom-whls
 
 echo "Uploaded!"
 

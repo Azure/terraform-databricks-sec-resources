@@ -25,7 +25,7 @@ resource "databricks_cluster" "standard_cluster" {
     max_workers = 3
   }
   library_whl {
-    path = format("%s/%s", "dbfs:/custom-whls/", local.package_names[0])
+    path = format("%s/%s", "dbfs:/mnt/custom-whls", local.package_names[0])
   }
 
 }

@@ -8,5 +8,6 @@
 # .tfvars files
 *.tfvars
 
-# Generated files
+# Generated files and directories
 *.txt
+*custom-whls
