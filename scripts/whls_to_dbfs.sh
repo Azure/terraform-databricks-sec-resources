@@ -17,7 +17,9 @@ do
     # Download whl
     curl --remote-name $uri
 
-    #TODO: successful checksum validation or quit
+    # Checksum validation
+    sha256sum $(basename $uri) > shasum.txt
+    sha256sum -c shasum.txt
 done
 
 cd ..

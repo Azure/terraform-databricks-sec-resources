@@ -17,8 +17,8 @@ variable "cluster_default_packages" {
     default = []
 }
 
-variable "whl_upload_script_name" {
+variable "whl_upload_script_path" {
     type = string
-    description = "Name of a bash script which downloads the whls in cluster_default_packages, and uploads them to dbfs."
+    description = "Path to a bash script which downloads the whls in cluster_default_packages, and uploads them to dbfs."
     default = "whls_to_dbfs.sh"
 }
