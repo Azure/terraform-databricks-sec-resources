@@ -8,7 +8,7 @@ resource "null_resource" "main" {
      cluster_default_packages = join(", ", var.cluster_default_packages)
   }
   provisioner "local-exec" {
-    command = "./scripts/${var.whl_upload_script_name} ${join(", ", var.cluster_default_packages)} ${var.databricks_host} ${var.databricks_api_token}"
+    command = "${var.whl_upload_script_path} ${join(", ", var.cluster_default_packages)} ${var.databricks_host} ${var.databricks_api_token}"
   }
 }
 
