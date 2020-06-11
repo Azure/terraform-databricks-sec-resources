@@ -8,12 +8,13 @@ resource "null_resource" "main" {
      cluster_default_packages = join(", ", var.cluster_default_packages)
   }
   provisioner "local-exec" {
-    command = "${var.whl_upload_script_path} ${join(", ", var.cluster_default_packages)} ${var.databricks_host} ${var.databricks_api_token}"
+    command = "./scripts/${var.whl_upload_script_name} ${join(", ", var.cluster_default_packages)} ${var.databricks_host} ${var.databricks_api_token}"
   }
 }
 
-locals {
-  package_names = split("\n", file("./scripts/whl_names.txt"))
+locals {  
+  last_index = length(split("/", var.cluster_default_packages[0]))-1
+  package_names = element(split("/", var.cluster_default_packages[0]), local.last_index)
 }
 
 resource "databricks_cluster" "standard_cluster" {
@@ -25,9 +26,8 @@ resource "databricks_cluster" "standard_cluster" {
     max_workers = 3
   }
   library_whl {
-    path = format("%s/%s", "dbfs:/mnt/custom-whls", local.package_names[0])
+    path = format("%s/%s", "dbfs:/mnt/custom-whls", local.package_names)
   }
-
 }
 
 # Create high concurrency cluster with AAD credential passthrough enabled

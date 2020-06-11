@@ -7,9 +7,6 @@
 
 echo "Downloading custom whls for clusters..."
 
-# Ready output file
-> "whl_names.txt"
-
 mkdir ./custom-whls && cd ./custom-whls
 
 # First argument should be a comma-separated string of remote URIs
@@ -21,9 +18,6 @@ do
     curl --remote-name $uri
 
     #TODO: successful checksum validation or quit
-
-    # Append whl filenames to output
-    echo $(basename $uri) >> "../whl_names.txt"
 done
 
 cd ..
@@ -31,8 +25,8 @@ cd ..
 echo "Downloaded. Uploading to dbfs..."
 
 # dbfs auth
-export DATABRICKS_ADDRESS=$2 # host
-export DATABRICKS_API_TOKEN=$3 # PAT
+export DATABRICKS_HOST=$2 # host
+export DATABRICKS_TOKEN=$3 # PAT
 
 # Upload ./custom-whls to dbfs
 dbfs cp -r ./custom-whls dbfs:/mnt/custom-whls
