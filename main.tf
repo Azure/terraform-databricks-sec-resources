@@ -13,8 +13,10 @@ resource "null_resource" "main" {
 }
 
 locals {  
-  last_index = length(split("/", var.cluster_default_packages[0]))-1
-  package_names = element(split("/", var.cluster_default_packages[0]), local.last_index)
+  package_names = [
+    for elem in var.cluster_default_packages:
+    element(split("/", elem), length(split("/", elem))-1)
+  ]
 }
 
 resource "databricks_cluster" "standard_cluster" {
@@ -26,7 +28,7 @@ resource "databricks_cluster" "standard_cluster" {
     max_workers = 3
   }
   library_whl {
-    path = format("%s/%s", "dbfs:/mnt/custom-whls", local.package_names)
+    path = format("%s/%s", "dbfs:/mnt/custom-whls", local.package_names[0])
   }
 }
 

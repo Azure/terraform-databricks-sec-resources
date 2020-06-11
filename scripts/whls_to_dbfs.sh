@@ -3,7 +3,7 @@
 # This script downloads any custom Python package whls using links in 
 # variables.cluster_default_packages, and re-uploads them to DBFS for cluster installation.
 
-#NOTE: this assumes network connectivity to the provided URIs
+# NOTE: this assumes network connectivity to the provided URIs
 
 echo "Downloading custom whls for clusters..."
 
@@ -20,6 +20,7 @@ do
     # Checksum validation
     sha256sum $(basename $uri) > shasum.txt
     sha256sum -c shasum.txt
+    rm shasum.txt
 done
 
 cd ..
