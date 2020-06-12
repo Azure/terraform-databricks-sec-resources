@@ -12,13 +12,6 @@ resource "null_resource" "main" {
   }
 }
 
-locals {  
-  package_names = [
-    for elem in var.cluster_default_packages:
-    element(split("/", elem), length(split("/", elem))-1)
-  ]
-}
-
 resource "databricks_cluster" "standard_cluster" {
   cluster_name  = "standard-cluster"
   spark_version = "6.4.x-scala2.11"
@@ -28,7 +21,8 @@ resource "databricks_cluster" "standard_cluster" {
     max_workers = 3
   }
   library_whl {
-    path = format("%s/%s", "dbfs:/mnt/custom-whls", local.package_names[0])
+    # Install default packages uploaded via bash
+    path = "dbfs:/mnt/libraries/defaultpackages.wheelhouse.zip"
   }
 }
 
@@ -46,6 +40,9 @@ resource "databricks_cluster" "high_concurrency_cluster" {
     "spark.databricks.repl.allowedLanguages": "python, sql"
     "spark.databricks.passthrough.enabled": true
     "spark.databricks.pyspark.enableProcessIsolation": true
+  }
+  library_whl {
+    path = "dbfs:/mnt/libraries/defaultpackages.wheelhouse.zip"
   }
 }
 

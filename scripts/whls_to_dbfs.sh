@@ -7,7 +7,7 @@
 
 echo "Downloading custom whls for clusters..."
 
-mkdir ./custom-whls && cd ./custom-whls
+mkdir ./defaultpackages && cd ./defaultpackages
 
 # First argument should be a comma-separated string of remote URIs
 IFS=', '
@@ -31,9 +31,11 @@ echo "Downloaded. Uploading to dbfs..."
 export DATABRICKS_HOST=$2 # host
 export DATABRICKS_TOKEN=$3 # PAT
 
-# Upload ./custom-whls to dbfs
-dbfs cp -r ./custom-whls dbfs:/mnt/custom-whls
+# Upload ./defaultpackages to dbfs
+zip -r ./defaultpackages.wheelhouse.zip ./defaultpackages
+dbfs cp ./defaultpackages.wheelhouse.zip dbfs:/mnt/libraries/defaultpackages.wheelhouse.zip
 
 echo "Uploaded!"
 
-rm -rf ./custom-whls
+rm -rf ./defaultpackages
+rm -rf ./defaultpackages.wheelhouse.zip

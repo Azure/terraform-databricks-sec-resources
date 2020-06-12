@@ -12,3 +12,6 @@
 *.txt
 *custom-whls
 *.whl
+
+# OS files
+*.DS_Store
