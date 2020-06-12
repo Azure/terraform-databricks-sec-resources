@@ -14,7 +14,7 @@ variable "databricks_api_token" {
 variable "cluster_default_packages" {
     type = list(string)
     description = "List of uris for any custom Python packages (.whl) to install on clusters by default."
-    default = []
+    default = ["placeholder"]
 }
 
 variable "whl_upload_script_path" {

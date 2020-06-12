@@ -5,37 +5,43 @@
 
 # NOTE: this assumes network connectivity to the provided URIs
 
-echo "Downloading custom whls for clusters..."
+set -e
 
-mkdir ./defaultpackages && cd ./defaultpackages
+if [ $1 == *".whl"* ]; then
 
-# First argument should be a comma-separated string of remote URIs
-IFS=', '
-read -ra ADDR <<< "$1"
-for uri in "${ADDR[@]}"; 
-do
-    # Download whl
-    curl --remote-name $uri
+    echo "Downloading custom whls for clusters..."
 
-    # Checksum validation
-    sha256sum $(basename $uri) > shasum.txt
-    sha256sum -c shasum.txt
-    rm shasum.txt
-done
+    mkdir ./defaultpackages && cd ./defaultpackages
 
-cd ..
+    # First argument should be a comma-separated string of remote URIs
+    IFS=', '
+    read -ra ADDR <<< "$1"
+    for uri in "${ADDR[@]}"; 
+    do
+        # Download whl
+        curl --remote-name $uri
 
-echo "Downloaded. Uploading to dbfs..."
+        # Checksum validation
+        sha256sum $(basename $uri) > shasum.txt
+        sha256sum -c shasum.txt
+        rm shasum.txt
+    done
 
-# dbfs auth
-export DATABRICKS_HOST=$2 # host
-export DATABRICKS_TOKEN=$3 # PAT
+    cd ..
 
-# Upload ./defaultpackages to dbfs
-zip -r ./defaultpackages.wheelhouse.zip ./defaultpackages
-dbfs cp ./defaultpackages.wheelhouse.zip dbfs:/mnt/libraries/defaultpackages.wheelhouse.zip
+    echo "Downloaded. Uploading to dbfs..."
 
-echo "Uploaded!"
+    # dbfs auth
+    export DATABRICKS_HOST=$2 # host
+    export DATABRICKS_TOKEN=$3 # PAT
 
-rm -rf ./defaultpackages
-rm -rf ./defaultpackages.wheelhouse.zip
+    # Upload ./defaultpackages to dbfs
+    zip -r ./defaultpackages.wheelhouse.zip ./defaultpackages
+    dbfs cp ./defaultpackages.wheelhouse.zip dbfs:/mnt/libraries/defaultpackages.wheelhouse.zip
+
+    echo "Uploaded!"
+
+    rm -rf ./defaultpackages
+    rm -rf ./defaultpackages.wheelhouse.zip
+
+fi
