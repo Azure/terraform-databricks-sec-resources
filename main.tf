@@ -10,6 +10,7 @@ resource "null_resource" "main" {
   provisioner "local-exec" {
     command = "${var.whl_upload_script_path} ${join(", ", var.cluster_default_packages)} ${var.databricks_host} ${var.databricks_api_token}"
   }
+  count = join(", ", var.cluster_default_packages) != "" ? 1 : 0 # Run whl upload only given default packages
 }
 
 resource "databricks_cluster" "standard_cluster" {
@@ -21,7 +22,6 @@ resource "databricks_cluster" "standard_cluster" {
     max_workers = 3
   }
   library_whl {
-    # Install default packages uploaded via bash
     path = "dbfs:/mnt/libraries/defaultpackages.wheelhouse.zip"
   }
 }
