@@ -46,6 +46,9 @@ module "workspace" {
 
 module "terraform-databricks-sec-resources" {
     source = "../../"
-    databricks_host = module.workspace.azurerm_databricks_workspace.workspace_url
-    databricks_api_token = "Insert valid PAT token here"
+    databricks_workspace = module.workspace.azurerm_databricks_workspace
+    sp_client_id = ""
+    sp_client_secret = ""
+    subscription_id = ""
+    tenant_id = ""
 }

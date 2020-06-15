@@ -1,12 +1,27 @@
 # Required variables
-variable "databricks_host" {
-    type = string
-    description = "URL to the Databricks workspace to interact with."
+variable "databricks_workspace" {
+    description = "Databricks workspace to deploy resources to."
 }
 
-variable "databricks_api_token" {
+variable "sp_client_id" {
     type = string
-    description = "A PAT or other valid token to authorise interaction with the Databricks host."
+    description = "Service Principal or App Registration Client ID for workspace auth."
+}
+
+
+variable "sp_client_secret" {
+    type = string
+    description = "Service Principal or App Registration Client secret for workspace auth."
+}
+
+variable "tenant_id" {
+    type = string
+    description = "ID of the Azure tenant in which the Databricks workspace is located."
+}
+
+variable "subscription_id" {
+    type = string
+    description = "ID of the Azure subscription in which the Databricks workspace is located."
 }
 
 # Optional variables

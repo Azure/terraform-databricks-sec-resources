@@ -44,10 +44,18 @@ module "workspace" {
   module_depends_on                   = ["module.azurerm_log_analytics_workspace.test_la"]
 }
 
+#TODO: gen service principal to use for auth below
+#TODO: time delay ~30 secs
+
+# Gen PAT token
+
 module "terraform-databricks-sec-resources" {
     source = "../../"
-    databricks_host = module.workspace.azurerm_databricks_workspace.workspace_url
-    databricks_api_token = "Insert valid PAT token here"
+    databricks_workspace = module.workspace.azurerm_databricks_workspace
+    sp_client_id = ""
+    sp_client_secret = ""
+    subscription_id = ""
+    tenant_id = ""
     cluster_default_packages = ["https://files.pythonhosted.org/packages/85/a0/21c1c33d6e3961d774184d26fc8baf31bc79250b531dc8c0217ccb788883/bokeh_plot-0.1.5-py3-none-any.whl"]
     whl_upload_script_path = "../scripts/whls_to_dbfs.sh"
 }
