@@ -1,6 +1,8 @@
 ## Requirements
 
-No requirements.
+An install of the latest release of the [Databricks Labs Terraform provider](https://github.com/databrickslabs/terraform-provider-databricks) is required, which cannot yet be done through `tf init` or targeting the latest version in config.
+
+Run: `$ curl https://raw.githubusercontent.com/databrickslabs/databricks-terraform/master/godownloader-databricks-provider.sh | bash -s -- -b $HOME/.terraform.d/plugins`
 
 ## Providers
 
