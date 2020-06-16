@@ -9,11 +9,11 @@ set -e
 
 echo "Downloading custom whls for clusters..."
 
-mkdir ./defaultpackages && cd ./defaultpackages
+mkdir defaultpackages && cd defaultpackages
 
 # First argument should be a comma-separated string of remote URIs
 IFS=', '
-read -ra ADDR <<< "$1"
+read -ra ADDR <<< "$2"
 for uri in "${ADDR[@]}"; 
 do
     # Download whl
@@ -30,14 +30,14 @@ cd ..
 echo "Downloaded. Uploading to dbfs..."
 
 # dbfs auth
-export DATABRICKS_HOST=$2 # host
-export DATABRICKS_TOKEN=$3 # PAT
+export DATABRICKS_HOST=$3 # host
+export DATABRICKS_TOKEN=$4 # PAT
 
 # Upload ./defaultpackages wheelhouse to dbfs
-zip -r ./defaultpackages.wheelhouse.zip ./defaultpackages
-dbfs cp --overwrite ./defaultpackages.wheelhouse.zip dbfs:/mnt/libraries/defaultpackages.wheelhouse.zip
+zip -r defaultpackages.wheelhouse.zip defaultpackages
+dbfs cp -r --overwrite defaultpackages.wheelhouse.zip dbfs:/mnt/libraries/defaultpackages.wheelhouse.zip
 
 echo "Uploaded!"
 
-rm -rf ./defaultpackages
-rm -rf ./defaultpackages.wheelhouse.zip
+rm -rf defaultpackages
+rm -rf defaultpackages.wheelhouse.zip

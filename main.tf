@@ -12,11 +12,12 @@ provider "databricks" {
 }
 
 locals {
-  db_host = var.databricks_workspace.workspace_url
+  db_host = format("%s%s", "https://", var.databricks_workspace.workspace_url)
+  upload_script_path = var.whl_upload_script_path == "" ? "${path.module}/scripts/whls_to_dbfs.sh" : var.whl_upload_script_path
 }
 
 resource "databricks_token" "upload_auth_token" {
-  lifetime_seconds = 6000
+  lifetime_seconds = 3600
   comment          = "DBFS auth for custom package upload"
 }
 
@@ -25,11 +26,10 @@ resource "null_resource" "main" {
     cluster_default_packages = join(", ", var.cluster_default_packages)
   }
   provisioner "local-exec" {
-    command = "${var.whl_upload_script_path} ${join(", ", var.cluster_default_packages)} ${local.db_host} ${databricks_token.upload_auth_token.token_value}"
+    command = "${local.upload_script_path} ${path.module} ${join(", ", var.cluster_default_packages)} ${local.db_host} ${databricks_token.upload_auth_token.token_value}"
   }
   count      = join(", ", var.cluster_default_packages) != "" ? 1 : 0
   depends_on = [databricks_token.upload_auth_token]
-
 }
 
 resource "databricks_cluster" "standard_cluster" {
