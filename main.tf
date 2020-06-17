@@ -43,6 +43,7 @@ resource "databricks_cluster" "standard_cluster" {
   library_whl {
     path = "dbfs:/mnt/libraries/defaultpackages.wheelhouse.zip"
   }
+  depends_on = [var.clusters_depend_on]
 }
 
 # Create high concurrency cluster with AAD credential passthrough enabled
@@ -63,6 +64,7 @@ resource "databricks_cluster" "high_concurrency_cluster" {
   library_whl {
     path = "dbfs:/mnt/libraries/defaultpackages.wheelhouse.zip"
   }
+  depends_on = [var.clusters_depend_on]
 }
 
 resource "databricks_notebook" "notebook" {

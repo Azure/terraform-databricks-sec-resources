@@ -39,6 +39,13 @@ module "workspace" {
   module_depends_on                   = ["module.azurerm_log_analytics_workspace.test_la"]
 }
 
+# Force cluster deployment to wait to avoid state error
+resource "time_sleep" "wait_5_mins" {
+  depends_on = [module.workspace.azurerm_databricks_workspace]
+  create_duration = "300s"
+}
+
+
 module "terraform-databricks-sec-resources" {
     source = "../../"
     databricks_workspace = module.workspace.azurerm_databricks_workspace
@@ -47,4 +54,5 @@ module "terraform-databricks-sec-resources" {
     subscription_id = var.azure_subscription_id
     tenant_id = var.azure_tenant_id
     cluster_default_packages = ["https://files.pythonhosted.org/packages/85/a0/21c1c33d6e3961d774184d26fc8baf31bc79250b531dc8c0217ccb788883/bokeh_plot-0.1.5-py3-none-any.whl"]
+    clusters_depend_on = [time_sleep.wait_5_mins]
 }

@@ -37,3 +37,8 @@ variable "whl_upload_script_path" {
     description = "Path to a bash script which downloads the whls in cluster_default_packages, and uploads them to dbfs."
     default = ""
 }
+
+variable "clusters_depend_on" { # Avoid timing errors in deploying clusters
+  type    = any
+  default = null
+}

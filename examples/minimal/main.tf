@@ -39,6 +39,13 @@ module "workspace" {
   module_depends_on                   = ["module.azurerm_log_analytics_workspace.test_la"]
 }
 
+# Force cluster deployment to wait to avoid state error
+resource "time_sleep" "wait_5_mins" {
+  depends_on = [module.workspace.azurerm_databricks_workspace]
+  create_duration = "300s"
+}
+
+
 module "terraform-databricks-sec-resources" {
     source = "../../"
     databricks_workspace = module.workspace.azurerm_databricks_workspace
@@ -46,4 +53,5 @@ module "terraform-databricks-sec-resources" {
     sp_client_secret = var.service_principal_client_secret
     subscription_id = var.azure_subscription_id
     tenant_id = var.azure_tenant_id
+    clusters_depend_on = [time_sleep.wait_5_mins]
 }
