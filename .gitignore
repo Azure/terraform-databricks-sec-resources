@@ -7,3 +7,11 @@
 
 # .tfvars files
 *.tfvars
+
+# Generated files and directories
+*.txt
+*custom-whls
+*.whl
+
+# OS files
+*.DS_Store
