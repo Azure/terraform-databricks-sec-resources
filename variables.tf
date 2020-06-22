@@ -3,13 +3,13 @@ variable "databricks_workspace" {
     description = "Databricks workspace to deploy resources to."
 }
 
-variable "sp_client_id" {
+variable "service_principal_client_id" {
     type = string
     description = "Service Principal or App Registration Client ID for workspace auth."
 }
 
 
-variable "sp_client_secret" {
+variable "service_principal_client_secret" {
     type = string
     description = "Service Principal or App Registration Client secret for workspace auth."
 }
