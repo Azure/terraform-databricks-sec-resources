@@ -11,44 +11,22 @@ module "naming" {
   source = "git::https://github.com/Azure/terraform-azurerm-naming"
 }
 
-resource "azurerm_log_analytics_workspace" "test_la" {
-  name                = "${module.naming.resource_group.slug}-${module.naming.log_analytics_workspace.slug}-min-test-${local.unique_name_stub}"
-  location            = var.resource_group_location
-  resource_group_name = var.resource_group_name
-  sku                 = "PerGB2018"
-}
-
-resource "azurerm_storage_account" "test_sa" {
-  name                     = module.naming.storage_account.name_unique
-  resource_group_name      = var.resource_group_name
-  location                 = var.resource_group_location
-  account_tier             = "Standard"
-  account_replication_type = "LRS"
-}
-
-module "workspace" {
-  source                              = "git::https://github.com/Azure/terraform-azurerm-sec-databricks-workspace"
-  resource_group_name                 = var.resource_group_name
-  log_analytics_resource_group_name   = azurerm_log_analytics_workspace.test_la.resource_group_name
-  log_analytics_name                  = azurerm_log_analytics_workspace.test_la.name
-  storage_account_resource_group_name = azurerm_storage_account.test_sa.resource_group_name
-  storage_account_name                = azurerm_storage_account.test_sa.name
-  prefix                              = [local.unique_name_stub]
-  suffix                              = [local.unique_name_stub]
-  databricks_workspace_sku            = "premium"
-  module_depends_on                   = ["module.azurerm_log_analytics_workspace.test_la"]
+resource "azurerm_databricks_workspace" "test_ws" {
+  name                      = local.unique_name_stub
+  resource_group_name       = var.resource_group_name
+  location                  = var.resource_group_location
+  sku                       = "premium"
 }
 
 # Force cluster deployment to wait to avoid state error
 resource "time_sleep" "wait_5_mins" {
-  depends_on = [module.workspace.azurerm_databricks_workspace]
+  depends_on = [azurerm_databricks_workspace.test_ws]
   create_duration = "300s"
 }
 
-
 module "terraform-databricks-sec-resources" {
     source = "../../"
-    databricks_workspace = module.workspace.azurerm_databricks_workspace
+    databricks_workspace = azurerm_databricks_workspace.test_ws
     sp_client_id = var.service_principal_client_id
     sp_client_secret = var.service_principal_client_secret
     subscription_id = var.azure_subscription_id
