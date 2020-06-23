@@ -38,11 +38,6 @@ variable "whl_upload_script_path" {
     default = ""
 }
 
-variable "clusters_depend_on" { # Avoid timing errors in deploying clusters
-  type    = any
-  default = null
-}
-
 variable "prefix" {
   type        = list(string)
   description = "A naming prefix to be used in the creation of unique names for deployed Databricks resources."

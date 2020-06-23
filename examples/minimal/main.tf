@@ -18,13 +18,6 @@ resource "azurerm_databricks_workspace" "test_ws" {
   sku                       = "premium"
 }
 
-# Hack required to avoid errors resulting from premature reporting
-# from Azure API that Azure Databricks workspace setup is complete
-resource "time_sleep" "wait_5_mins" {
-  depends_on = [azurerm_databricks_workspace.test_ws]
-  create_duration = "300s"
-}
-
 module "terraform-databricks-sec-resources" {
     source = "../../"
     databricks_workspace = azurerm_databricks_workspace.test_ws
@@ -32,5 +25,4 @@ module "terraform-databricks-sec-resources" {
     service_principal_client_secret = var.service_principal_client_secret
     subscription_id = var.azure_subscription_id
     tenant_id = var.azure_tenant_id
-    clusters_depend_on = [time_sleep.wait_5_mins]
 }

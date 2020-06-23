@@ -22,6 +22,13 @@ module "naming" {
   prefix = var.prefix
 }
 
+# Hack required to avoid errors resulting from premature reporting
+# from Azure API that Azure Databricks workspace setup is complete
+resource "time_sleep" "wait" {
+  depends_on = [var.databricks_workspace]
+  create_duration = "300s" # 5 minutes
+}
+
 resource "databricks_token" "upload_auth_token" {
   lifetime_seconds = 3600
   comment          = "DBFS auth for custom package upload"
@@ -49,7 +56,7 @@ resource "databricks_cluster" "standard_cluster" {
   library_whl {
     path = "dbfs:/mnt/libraries/defaultpackages.wheelhouse.zip"
   }
-  depends_on = [var.clusters_depend_on]
+  depends_on = [time_sleep.wait]
 }
 
 # Create high concurrency cluster with AAD credential passthrough enabled
@@ -70,7 +77,7 @@ resource "databricks_cluster" "high_concurrency_cluster" {
   library_whl {
     path = "dbfs:/mnt/libraries/defaultpackages.wheelhouse.zip"
   }
-  depends_on = [var.clusters_depend_on]
+  depends_on = [time_sleep.wait]
 }
 
 resource "databricks_notebook" "notebook" {
