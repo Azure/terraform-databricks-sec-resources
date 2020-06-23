@@ -18,7 +18,8 @@ resource "azurerm_databricks_workspace" "test_ws" {
   sku                       = "premium"
 }
 
-# Force cluster deployment to wait to avoid state error
+# Hack required to avoid errors resulting from premature reporting
+# from Azure API that Azure Databricks workspace setup is complete
 resource "time_sleep" "wait_5_mins" {
   depends_on = [azurerm_databricks_workspace.test_ws]
   create_duration = "300s"
