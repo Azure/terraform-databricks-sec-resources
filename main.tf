@@ -16,6 +16,12 @@ locals {
   upload_script_path = var.whl_upload_script_path == "" ? "${path.module}/scripts/whls_to_dbfs.sh" : var.whl_upload_script_path
 }
 
+module "naming" {
+  source = "git::https://github.com/Azure/terraform-azurerm-naming"
+  suffix = var.suffix
+  prefix = var.prefix
+}
+
 resource "databricks_token" "upload_auth_token" {
   lifetime_seconds = 3600
   comment          = "DBFS auth for custom package upload"
@@ -33,7 +39,7 @@ resource "null_resource" "main" {
 }
 
 resource "databricks_cluster" "standard_cluster" {
-  cluster_name  = "standard-cluster"
+  cluster_name  = module.naming.databricks_standard_cluster.name
   spark_version = "6.4.x-scala2.11"
   node_type_id  = "Standard_DS13_v2"
   autoscale {
@@ -48,7 +54,7 @@ resource "databricks_cluster" "standard_cluster" {
 
 # Create high concurrency cluster with AAD credential passthrough enabled
 resource "databricks_cluster" "high_concurrency_cluster" {
-  cluster_name  = "high-concurrency-cluster"
+  cluster_name  = module.naming.databricks_high_concurrency_cluster.name
   spark_version = "6.4.x-scala2.11"
   node_type_id  = "Standard_DS13_v2"
   autoscale {
