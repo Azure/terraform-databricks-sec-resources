@@ -1,10 +1,12 @@
 ## Requirements
 
-An install of the latest release of the [Databricks Labs Terraform provider](https://github.com/databrickslabs/terraform-provider-databricks) is required, which cannot yet be done through `tf init` or targeting the latest version in config.
+- Install the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) and log in with `az login`
+- Install [Terraform](https://learn.hashicorp.com/terraform/getting-started/install.html)
+- Install zip with `$ sudo apt install zip` on Linux
+- Install version 0.2.0 of the Databricks Labs Terraform provider. This is required due to a [known bug](https://github.com/databrickslabs/terraform-provider-databricks/issues/127) introduced in later versions which affects service principal authentication, or [`azure_auth`](https://databrickslabs.github.io/terraform-provider-databricks/provider/#azure-service-principal-auth). The command for installing this specific version is:
 
-Run: 
 ```shell
-$ curl https://raw.githubusercontent.com/databrickslabs/databricks-terraform/master/godownloader-databricks-provider.sh | bash -s -- -b $HOME/.terraform.d/plugins
+wget https://github.com/databrickslabs/terraform-provider-databricks/releases/download/v0.2.0/databricks-terraform_0.2.0_Linux_64-bit.tar.gz -P $HOME/.terraform.d/plugins && tar xvfz $HOME/.terraform.d/plugins/databricks-terraform_*.tar.gz -C $HOME/.terraform.d/plugins && rm $HOME/.terraform.d/plugins/LICENSE $HOME/.terraform.d/plugins/NOTICE $HOME/.terraform.d/plugins/databricks-terraform_*.tar.gz
 ```
 
 The `examples` directory contains ready to run usage examples for the module. Details of a service principal with contributor rights to the subscription you'll be deploying to are required before use. Information on these and other required variables are in the `variables.tf` files which accompany the examples.
