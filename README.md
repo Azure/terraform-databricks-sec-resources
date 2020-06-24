@@ -1,9 +1,10 @@
 ## Requirements
 
-- Install the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) and log in with `az login`
+- Install the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) and log in with `$ az login`
+- Install pip with `$ sudo apt get install python-pip`, and use it to install the[Databricks CLI](https://docs.databricks.com/dev-tools/cli/index.html#install-the-cli). Note that this may require you to [update your path](https://stackoverflow.com/questions/52012006/databricks-cli-not-installing-on-ubuntu-18-04) following the pip install, so test the install with `$ databricks -h`.
 - Install [Terraform](https://learn.hashicorp.com/terraform/getting-started/install.html)
 - Install zip with `$ sudo apt install zip` on Linux
-- Install version 0.2.0 of the Databricks Labs Terraform provider. This is required due to a [known bug](https://github.com/databrickslabs/terraform-provider-databricks/issues/127) introduced in later versions which affects service principal authentication, or [`azure_auth`](https://databrickslabs.github.io/terraform-provider-databricks/provider/#azure-service-principal-auth). The command for installing this specific version is:
+- Install version 0.2.0 of the [Databricks Labs Terraform provider](https://github.com/databrickslabs/terraform-provider-databricks). This specific version is required due to a [known bug](https://github.com/databrickslabs/terraform-provider-databricks/issues/127) introduced in later versions which affects service principal authentication, or [`azure_auth`](https://databrickslabs.github.io/terraform-provider-databricks/provider/#azure-service-principal-auth). This can be installed as follows:
 
 ```shell
 wget https://github.com/databrickslabs/terraform-provider-databricks/releases/download/v0.2.0/databricks-terraform_0.2.0_Linux_64-bit.tar.gz \
