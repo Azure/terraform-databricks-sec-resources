@@ -7,6 +7,8 @@ Run:
 $ curl https://raw.githubusercontent.com/databrickslabs/databricks-terraform/master/godownloader-databricks-provider.sh | bash -s -- -b $HOME/.terraform.d/plugins
 ```
 
+The `examples` directory contains ready to run usage examples for the module. Details of a service principal with contributor rights to the subscription you'll be deploying to are required before use. Information on these and other required variables are in the `variables.tf` files which accompany the examples.
+
 ## Providers
 
 | Name | Version |
