@@ -1,0 +1,17 @@
+#  Local .terraform directories
+**/.terraform/*
+
+# .tfstate files
+*.tfstate
+*.tfstate.*
+
+# .tfvars files
+*.tfvars
+
+# Generated files and directories
+*.txt
+*custom-whls
+*.whl
+
+# OS files
+*.DS_Store
