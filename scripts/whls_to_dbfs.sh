@@ -9,7 +9,7 @@ set -e
 
 echo "Downloading custom whls for clusters..."
 
-mkdir defaultpackages && cd defaultpackages
+mkdir -p defaultpackages && cd defaultpackages
 
 # First argument should be a comma-separated string of remote URIs
 IFS=', '
