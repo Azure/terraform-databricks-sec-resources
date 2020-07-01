@@ -1,9 +1,5 @@
 provider "databricks" {
   azure_auth = {
-    client_id              = var.service_principal_client_id
-    client_secret          = var.service_principal_client_secret
-    tenant_id              = var.tenant_id
-    subscription_id        = var.subscription_id
     workspace_name         = var.databricks_workspace.name
     resource_group         = var.databricks_workspace.resource_group_name
     managed_resource_group = var.databricks_workspace.managed_resource_group_name

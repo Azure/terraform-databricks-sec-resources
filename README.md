@@ -18,6 +18,13 @@ $HOME/.terraform.d/plugins/databricks-terraform_*.tar.gz
 
 The `examples` directory contains ready to run usage examples for the module. Details of a service principal with contributor rights to the subscription you'll be deploying to are required before use. Information on these and other required variables are in the `variables.tf` files which accompany the examples.
 
+NOTE - before running, in order for the Databricks provider to complete authentication, you must set the following environment variables on your machine:
+
+- `ARM_SUBSCRIPTION_ID`: ID of the Azure subscription in which the Databricks workspace is located.
+- `ARM_TENANT_ID`: ID of the Azure tenant in which the Databricks workspace is located.
+- `ARM_CLIENT_ID`: Service Principal or App Registration Client ID for workspace auth.
+- `ARM_CLIENT_SECRET`: Service Principal or App Registration Client secret for workspace auth.
+
 ## Providers
 
 | Name | Version |
@@ -33,11 +40,7 @@ The `examples` directory contains ready to run usage examples for the module. De
 | cluster\_default\_packages | List of uris for any custom Python packages (.whl) to install on clusters by default. | `list(string)` | `[]` | no |
 | databricks\_workspace | Databricks workspace to deploy resources to. | `any` | n/a | yes |
 | prefix | A naming prefix to be used in the creation of unique names for deployed Databricks resources. | `list(string)` | `[]` | no |
-| service\_principal\_client\_id | Service Principal or App Registration Client ID for workspace auth. | `string` | n/a | yes |
-| service\_principal\_client\_secret | Service Principal or App Registration Client secret for workspace auth. | `string` | n/a | yes |
-| subscription\_id | ID of the Azure subscription in which the Databricks workspace is located. | `string` | n/a | yes |
 | suffix | A naming suffix to be used in the creation of unique names for deployed Databricks resources. | `list(string)` | `[]` | no |
-| tenant\_id | ID of the Azure tenant in which the Databricks workspace is located. | `string` | n/a | yes |
 | whl\_upload\_script\_path | Path to a bash script which downloads the whls in cluster\_default\_packages, and uploads them to dbfs. | `string` | `""` | no |
 
 ## Outputs
