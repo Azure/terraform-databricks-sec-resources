@@ -18,12 +18,21 @@ $HOME/.terraform.d/plugins/databricks-terraform_*.tar.gz
 
 The `examples` directory contains ready to run usage examples for the module. Details of a service principal with contributor rights to the subscription you'll be deploying to are required before use. Information on these and other required variables are in the `variables.tf` files which accompany the examples.
 
-NOTE - before running, in order for the Databricks provider to complete authentication, you must set the following environment variables on your machine:
+NOTE - before running, in order for the Databricks provider to complete authentication, you must set several environment variables on your machine as follows:
 
-- `ARM_SUBSCRIPTION_ID`: ID of the Azure subscription in which the Databricks workspace is located.
-- `ARM_TENANT_ID`: ID of the Azure tenant in which the Databricks workspace is located.
-- `ARM_CLIENT_ID`: Service Principal or App Registration Client ID for workspace auth.
-- `ARM_CLIENT_SECRET`: Service Principal or App Registration Client secret for workspace auth.
+```shell
+# ID of the Azure subscription in which the Databricks workspace is located
+export ARM_SUBSCRIPTION_ID="your-sub-id"
+
+# ID of the Azure tenant in which the Databricks workspace is located
+export ARM_TENANT_ID="your-tenant-id"
+
+# Service Principal or App Registration Client ID for workspace auth
+export ARM_CLIENT_ID="your-client-id"
+
+# Service Principal or App Registration Client secret for workspace auth
+export ARM_CLIENT_SECRET="your-client-secret"
+```
 
 ## Providers
 
