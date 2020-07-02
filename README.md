@@ -16,9 +16,9 @@ $HOME/.terraform.d/plugins/NOTICE \
 $HOME/.terraform.d/plugins/databricks-terraform_*.tar.gz
 ```
 
-The `examples` directory contains ready to run usage examples for the module. Details of a service principal with contributor rights to the subscription you'll be deploying to are required before use. Information on these and other required variables are in the `variables.tf` files which accompany the examples.
+The `examples` directory contains ready to run usage examples for the module.
 
-NOTE - before running, in order for the Databricks provider to complete authentication, you must set several environment variables on your machine as follows:
+Before running, in order for the Databricks provider to complete authentication, you must set several environment variables on your machine as follows:
 
 ```shell
 # ID of the Azure subscription in which the Databricks workspace is located
