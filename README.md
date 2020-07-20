@@ -1,3 +1,12 @@
+# This is an ALPHA stage module
+
+This module is not suitable for production.
+
+There is no guarantee.
+
+This module is only a demo code.
+
+
 ## Requirements
 
 - Install the [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/install-azure-cli?view=azure-cli-latest) and log in with `$ az login`
