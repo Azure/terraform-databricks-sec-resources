@@ -29,4 +29,5 @@ resource "azurerm_databricks_workspace" "test_ws" {
 module "terraform-databricks-sec-resources" {
     source = "../../"
     databricks_workspace = azurerm_databricks_workspace.test_ws
+    notebook_path = "notebooks/notebook.ipynb"
 }

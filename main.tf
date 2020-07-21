@@ -77,11 +77,11 @@ resource "databricks_cluster" "high_concurrency_cluster" {
   depends_on = [time_sleep.wait]
 }
 
+# Upload local Jupyter notebook on deployment
 resource "databricks_notebook" "notebook" {
-  content   = base64encode("# Welcome to your Jupyter notebook")
-  path      = "/mynotebook"
-  overwrite = false
-  mkdirs    = true
-  language  = "PYTHON"
-  format    = "SOURCE"
+	content = filebase64("${path.module}/${var.notebook_path}")
+	path = "/${var.notebook_name}"
+	mkdirs = true
+	overwrite = false
+	format = "JUPYTER"
 }

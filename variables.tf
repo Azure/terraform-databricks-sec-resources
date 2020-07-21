@@ -3,6 +3,11 @@ variable "databricks_workspace" {
     description = "Databricks workspace to deploy resources to."
 }
 
+variable "notebook_path" {
+  type = string
+  description = "Relative path to a local Jupyter notebook to deploy to the workspace."
+}
+
 # Optional variables
 
 variable "cluster_default_packages" {
@@ -27,4 +32,10 @@ variable "suffix" {
   type        = list(string)
   description = "A naming suffix to be used in the creation of unique names for deployed Databricks resources."
   default     = []
+}
+
+variable "notebook_name" {
+  type = string
+  description = "Desired name of the deployed notebook as it will appear in the workspace."
+  default = "mynotebook"
 }
