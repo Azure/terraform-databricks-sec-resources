@@ -62,7 +62,7 @@ You must also create a local [Jupyter notebook](https://jupyter.org/) for deploy
 | prefix | A naming prefix to be used in the creation of unique names for deployed Databricks resources. | `list(string)` | `[]` | no |
 | suffix | A naming suffix to be used in the creation of unique names for deployed Databricks resources. | `list(string)` | `[]` | no |
 | whl\_upload\_script\_path | Path to a bash script which downloads the whls in cluster\_default\_packages, and uploads them to dbfs. | `string` | `""` | no |
-| notebook\_path | Relative path to a local Jupyter notebook to deploy to the workspace. | `string` | `N/A` | yes |
+| notebook\_path | Relative path to a local Jupyter notebook to deploy to the workspace. | `string` | n/a | yes |
 | notebook\_name | Desired name of the deployed notebook as it will appear in the workspace. | `string` | `"mynotebook"` | no |
 
 ## Outputs
