@@ -43,6 +43,8 @@ export ARM_CLIENT_ID="your-client-id"
 export ARM_CLIENT_SECRET="your-client-secret"
 ```
 
+You must also create a local [Jupyter notebook](https://jupyter.org/) for deployment to the workspace. This can contain any valid Jupyter notebook content. To use with the examples out of the box, this should be placed at `./notebooks/notebook.ipynb`, or you can pass in the path to another notebook on your system as variable `notebook_path`.
+
 ## Providers
 
 | Name | Version |
@@ -60,6 +62,8 @@ export ARM_CLIENT_SECRET="your-client-secret"
 | prefix | A naming prefix to be used in the creation of unique names for deployed Databricks resources. | `list(string)` | `[]` | no |
 | suffix | A naming suffix to be used in the creation of unique names for deployed Databricks resources. | `list(string)` | `[]` | no |
 | whl\_upload\_script\_path | Path to a bash script which downloads the whls in cluster\_default\_packages, and uploads them to dbfs. | `string` | `""` | no |
+| notebook\_path | Relative path to a local Jupyter notebook to deploy to the workspace. | `string` | n/a | yes |
+| notebook\_name | Desired name of the deployed notebook as it will appear in the workspace. | `string` | `"mynotebook"` | no |
 
 ## Outputs
 

@@ -9,7 +9,7 @@ provider "databricks" {
 }
 
 locals {
-  db_host = format("%s%s", "https://", var.databricks_workspace.workspace_url)
+  db_host            = format("%s%s", "https://", var.databricks_workspace.workspace_url)
   upload_script_path = var.whl_upload_script_path == "" ? "${path.module}/scripts/whls_to_dbfs.sh" : var.whl_upload_script_path
 }
 
@@ -22,7 +22,7 @@ module "naming" {
 # Hack required to avoid errors resulting from premature reporting
 # from Azure API that Azure Databricks workspace setup is complete
 resource "time_sleep" "wait" {
-  depends_on = [var.databricks_workspace]
+  depends_on      = [var.databricks_workspace]
   create_duration = "300s" # 5 minutes
 }
 
@@ -77,11 +77,11 @@ resource "databricks_cluster" "high_concurrency_cluster" {
   depends_on = [time_sleep.wait]
 }
 
+# Upload local Jupyter notebook on deployment
 resource "databricks_notebook" "notebook" {
-  content   = base64encode("# Welcome to your Jupyter notebook")
-  path      = "/mynotebook"
-  overwrite = false
+  content   = filebase64("${path.module}/${var.notebook_path}")
+  path      = "/${var.notebook_name}"
   mkdirs    = true
-  language  = "PYTHON"
-  format    = "SOURCE"
+  overwrite = false
+  format    = "JUPYTER"
 }

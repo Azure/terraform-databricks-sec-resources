@@ -17,16 +17,17 @@ resource "azurerm_resource_group" "test_rg" {
 }
 
 resource "azurerm_databricks_workspace" "test_ws" {
-  name                      = local.unique_name_stub
-  resource_group_name       = azurerm_resource_group.test_rg.name
-  location                  = azurerm_resource_group.test_rg.location
-  sku                       = "premium"
+  name                = local.unique_name_stub
+  resource_group_name = azurerm_resource_group.test_rg.name
+  location            = azurerm_resource_group.test_rg.location
+  sku                 = "premium"
 }
 
 # Please ensure your service principal has contributor rights to the
 # subscription in which the test resource group will be created,
 # which should have id == var.subscription_id
 module "terraform-databricks-sec-resources" {
-    source = "../../"
-    databricks_workspace = azurerm_databricks_workspace.test_ws
+  source               = "../../"
+  databricks_workspace = azurerm_databricks_workspace.test_ws
+  notebook_path        = "notebooks/notebook.ipynb"
 }
