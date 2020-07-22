@@ -15,6 +15,3 @@
 
 # OS files
 *.DS_Store
-
-# Notebook files
-*notebooks

@@ -77,8 +77,9 @@ resource "databricks_cluster" "high_concurrency_cluster" {
   depends_on = [time_sleep.wait]
 }
 
-# Upload local Jupyter notebook on deployment
+# If notebook_path given, upload local Jupyter notebook on deployment
 resource "databricks_notebook" "notebook" {
+  count     = var.notebook_path == "" ? 0 : 1
   content   = filebase64("${path.module}/${var.notebook_path}")
   path      = "/${var.notebook_name}"
   mkdirs    = true

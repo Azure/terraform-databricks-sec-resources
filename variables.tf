@@ -3,12 +3,13 @@ variable "databricks_workspace" {
   description = "Databricks workspace to deploy resources to."
 }
 
+# Optional variables
+
 variable "notebook_path" {
   type        = string
   description = "Relative path to a local Jupyter notebook to deploy to the workspace."
+  default     = ""
 }
-
-# Optional variables
 
 variable "cluster_default_packages" {
   type        = list(string)
