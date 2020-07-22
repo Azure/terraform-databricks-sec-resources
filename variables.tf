@@ -8,7 +8,7 @@ variable "databricks_workspace" {
 variable "notebook_path" {
   type        = string
   description = "Relative path to a local Jupyter notebook to deploy to the workspace."
-  default = ""
+  default     = ""
 }
 
 variable "cluster_default_packages" {
