@@ -43,7 +43,7 @@ export ARM_CLIENT_ID="your-client-id"
 export ARM_CLIENT_SECRET="your-client-secret"
 ```
 
-The module also provides the option to deploy a pre-created local [Jupyter notebook](https://jupyter.org/) to the workspace. This can contain any valid Jupyter notebook content. Use of variable `notebook_path` triggers this resource deployment, but as in the minimal example it can be foregone entirely, deploying just the workspace and clusters.
+The module also provides the option to deploy a pre-created local [Jupyter notebook](https://jupyter.org/) to the workspace. This can contain any valid Jupyter notebook content. Use of variable `notebook_path` triggers this resource deployment, but as in the minimal example it can be foregone entirely, deploying just the workspace and clusters. For ease of getting started, an example notebook is provided at `./notebooks/notebook.ipynb`, and the complete example uploads this by default.
 
 ## Providers
 
