@@ -86,3 +86,25 @@ resource "databricks_notebook" "notebook" {
   overwrite = false
   format    = "JUPYTER"
 }
+
+resource "azurerm_api_management_api" "notebook_api" {
+  name                = "invoke_notebook"
+  resource_group_name = var.apim.resource_group_name
+  api_management_name = var.apim.name
+  revision            = "1"
+  display_name        = "Notebook invocation API"
+  path                = "invoke"
+  protocols           = ["https"]
+
+  import {
+    content_format = "swagger-link-json"
+    content_value  = "http://conferenceapi.azurewebsites.net/?format=json"
+    # content_format = "swagger-json"
+    # content_value  = file("./notebook-api-swagger.json")
+  }
+  depends_on = [
+    var.apim,
+    databricks_notebook.notebook
+  ]
+
+}
