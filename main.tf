@@ -97,14 +97,153 @@ resource "azurerm_api_management_api" "notebook_api" {
   protocols           = ["https"]
 
   import {
-    content_format = "swagger-link-json"
-    content_value  = "http://conferenceapi.azurewebsites.net/?format=json"
-    # content_format = "swagger-json"
-    # content_value  = file("./notebook-api-swagger.json")
-  }
-  depends_on = [
-    var.apim,
-    databricks_notebook.notebook
-  ]
-
+    # content_format = "swagger-link-json"
+    # content_value  = "http://conferenceapi.azurewebsites.net/?format=json"
+    content_format = "swagger-json"
+    #content_value  = file("./notebook-api-swagger.json")
+    content_value = <<EOT
+      {
+        "swagger": "2.0",
+        "info": {
+          "version": "1.0",
+          "title": "DatabricksNotebookInvoke",
+          "contact": {}
+        },
+        "host": ""${local.db_host}"",
+        "basePath": "/api/2.0/jobs",
+        "securityDefinitions": {},
+        "schemes": [
+          "https"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "paths": {
+          "/create": {
+            "post": {
+              "summary": "Databricks notebook task",
+              "tags": [
+                "Misc"
+              ],
+              "operationId": "Databricksnotebooktask",
+              "deprecated": false,
+              "produces": [
+                "application/json"
+              ],
+              "consumes": [
+                "application/json"
+              ],
+              "parameters": [
+                {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": false,
+                  "default": "Bearer {token}",
+                  "type": "string"
+                },
+                {
+                  "name": "Content-Type",
+                  "in": "header",
+                  "required": true,
+                  "type": "string",
+                  "description": ""
+                },
+                {
+                  "name": "Body",
+                  "in": "body",
+                  "required": true,
+                  "description": "",
+                  "schema": {
+                    "$ref": "#/definitions/DatabricksnotebooktaskRequest"
+                  }
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "",
+                  "headers": {}
+                }
+              }
+            }
+          }
+        },
+        "definitions": {
+          "DatabricksnotebooktaskRequest": {
+            "title": "DatabricksnotebooktaskRequest",
+            "example": {
+              "name": "Notebook run job",
+              "existing_cluster_id": ""${databricks_cluster.standard_cluster.id}"",
+              "task": {
+                "notebook_task": {
+                  "notebook_path": ""/${var.notebook_name}""
+                }
+              }
+            },
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "existing_cluster_id": {
+                "type": "string"
+              },
+              "task": {
+                "$ref": "#/definitions/Task"
+              }
+            },
+            "required": [
+              "name",
+              "existing_cluster_id",
+              "task"
+            ]
+          },
+          "Task": {
+            "title": "Task",
+            "example": {
+              "notebook_task": {
+                "notebook_path": ""/${var.notebook_name}""
+              }
+            },
+            "type": "object",
+            "properties": {
+              "notebook_task": {
+                "$ref": "#/definitions/NotebookTask"
+              }
+            },
+            "required": [
+              "notebook_task"
+            ]
+          },
+          "NotebookTask": {
+            "title": "NotebookTask",
+            "example": {
+              "notebook_path": ""/${var.notebook_name}""
+            },
+            "type": "object",
+            "properties": {
+              "notebook_path": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "notebook_path"
+            ]
+          }
+        },
+        "tags": [
+          {
+            "name": "Misc",
+            "description": ""
+          }
+        ]
+      }
+        EOT
+      }
+    depends_on = [
+      var.apim,
+      databricks_notebook.notebook
+    ]
 }
