@@ -32,17 +32,6 @@ resource "azurerm_api_management" "test_apim" {
 
   sku_name = "Developer_1"
 
-#   policy {
-#     xml_content = <<XML
-#     <policies>
-#       <inbound />
-#       <backend />
-#       <outbound />
-#       <on-error />
-#     </policies>
-# XML
-
-#   }
 }
 
 # Please ensure your service principal has contributor rights to the

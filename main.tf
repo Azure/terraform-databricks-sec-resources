@@ -109,7 +109,7 @@ resource "azurerm_api_management_api" "notebook_api" {
           "title": "DatabricksNotebookInvoke",
           "contact": {}
         },
-        "host": ""${local.db_host}"",
+        "host": "${var.databricks_workspace.workspace_url}",
         "basePath": "/api/2.0/jobs",
         "securityDefinitions": {},
         "schemes": [
@@ -175,10 +175,10 @@ resource "azurerm_api_management_api" "notebook_api" {
             "title": "DatabricksnotebooktaskRequest",
             "example": {
               "name": "Notebook run job",
-              "existing_cluster_id": ""${databricks_cluster.standard_cluster.id}"",
+              "existing_cluster_id": "${databricks_cluster.standard_cluster.id}",
               "task": {
                 "notebook_task": {
-                  "notebook_path": ""/${var.notebook_name}""
+                  "notebook_path": "/${var.notebook_name}"
                 }
               }
             },
@@ -204,7 +204,7 @@ resource "azurerm_api_management_api" "notebook_api" {
             "title": "Task",
             "example": {
               "notebook_task": {
-                "notebook_path": ""/${var.notebook_name}""
+                "notebook_path": "/${var.notebook_name}"
               }
             },
             "type": "object",
@@ -220,7 +220,7 @@ resource "azurerm_api_management_api" "notebook_api" {
           "NotebookTask": {
             "title": "NotebookTask",
             "example": {
-              "notebook_path": ""/${var.notebook_name}""
+              "notebook_path": "/${var.notebook_name}"
             },
             "type": "object",
             "properties": {
