@@ -45,5 +45,5 @@ module "terraform-databricks-sec-resources" {
   suffix                   = [local.unique_name_stub]
   notebook_path            = "notebooks/notebook.ipynb"
   notebook_name            = "notebook"
-  apim = azurerm_api_management.test_apim
+  apim                     = azurerm_api_management.test_apim
 }
