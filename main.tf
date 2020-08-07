@@ -34,10 +34,6 @@ resource "databricks_token" "upload_auth_token" {
 resource "databricks_token" "notebook_invoke_token" {
   lifetime_seconds = 10800 # deployed API will be authorised for 3 hours
   comment          = "Temporary auth token for notebook job invocation API"
-  depends_on = [
-    var.apim,
-    databricks_notebook.notebook
-  ]
 }
 
 resource "null_resource" "main" {
