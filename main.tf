@@ -34,6 +34,10 @@ resource "databricks_token" "upload_auth_token" {
 resource "databricks_token" "notebook_invoke_token" {
   lifetime_seconds = 10800 # deployed API will be authorised for 3 hours
   comment          = "Temporary auth token for notebook job invocation API"
+  depends_on = [
+    var.apim,
+    databricks_notebook.notebook
+  ]
 }
 
 resource "null_resource" "main" {
@@ -100,10 +104,11 @@ resource "azurerm_api_management_api" "notebook_api" {
   display_name        = "Notebook invocation API"
   path                = "run"
   protocols           = ["https"]
+  service_url         = "${local.db_host}/api/2.0/jobs"
 
   import {
     content_format = "swagger-json"
-    content_value = <<EOT
+    content_value  = <<EOT
       {
 
         "swagger": "2.0",

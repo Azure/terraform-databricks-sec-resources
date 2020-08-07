@@ -40,5 +40,5 @@ resource "azurerm_api_management" "test_apim" {
 module "terraform-databricks-sec-resources" {
   source                   = "../../"
   databricks_workspace     = azurerm_databricks_workspace.test_ws
-  apim = azurerm_api_management.test_apim
+  apim                     = azurerm_api_management.test_apim
 }
