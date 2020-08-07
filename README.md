@@ -45,6 +45,8 @@ export ARM_CLIENT_SECRET="your-client-secret"
 
 The module also provides the option to deploy a pre-created local [Jupyter notebook](https://jupyter.org/) to the workspace. This can contain any valid Jupyter notebook content. Use of variable `notebook_path` triggers this resource deployment, but as in the minimal example it can be foregone entirely, deploying just the workspace and clusters. For ease of getting started, an example notebook is provided at `./notebooks/notebook.ipynb`, and the complete example uploads this by default.
 
+If a notebook is deployed, an APIM API is automatically deployed with it which uses the [Databricks Jobs](https://docs.databricks.com/jobs.html) API to invoke the notebook via an HTTP POST. Results of an invocation can be retrieved using the job ID returned by such a request.
+
 ## Providers
 
 | Name | Version |
@@ -59,6 +61,7 @@ The module also provides the option to deploy a pre-created local [Jupyter noteb
 |------|-------------|------|---------|:--------:|
 | cluster\_default\_packages | List of uris for any custom Python packages (.whl) to install on clusters by default. | `list(string)` | `[]` | no |
 | databricks\_workspace | Databricks workspace to deploy resources to. | `any` | n/a | yes |
+| apim | API Management resource object to deploy notebook invocation API(s) to. | `any` | n/a | yes |
 | prefix | A naming prefix to be used in the creation of unique names for deployed Databricks resources. | `list(string)` | `[]` | no |
 | suffix | A naming suffix to be used in the creation of unique names for deployed Databricks resources. | `list(string)` | `[]` | no |
 | whl\_upload\_script\_path | Path to a bash script which downloads the whls in cluster\_default\_packages, and uploads them to dbfs. | `string` | `""` | no |
