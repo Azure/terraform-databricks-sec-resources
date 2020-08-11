@@ -101,6 +101,7 @@ resource "azurerm_api_management_api" "notebook_api" {
   path                = "run"
   protocols           = ["https"]
   service_url         = "${local.db_host}/api/2.0/jobs"
+  count     = var.notebook_path == "" ? 0 : 1
 
   import {
     content_format = "swagger-json"
