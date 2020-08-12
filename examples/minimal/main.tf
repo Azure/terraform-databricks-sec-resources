@@ -23,10 +23,22 @@ resource "azurerm_databricks_workspace" "test_ws" {
   sku                 = "premium"
 }
 
+resource "azurerm_api_management" "test_apim" {
+  name                = local.unique_name_stub
+  location            = azurerm_resource_group.test_rg.location
+  resource_group_name = azurerm_resource_group.test_rg.name
+  publisher_name      = "My Company"
+  publisher_email     = "company@terraform.io"
+
+  sku_name = "Developer_1"
+
+}
+
 # Please ensure your service principal has contributor rights to the
 # subscription in which the test resource group will be created,
 # which should have id == var.subscription_id
 module "terraform-databricks-sec-resources" {
-  source               = "../../"
-  databricks_workspace = azurerm_databricks_workspace.test_ws
+  source                   = "../../"
+  databricks_workspace     = azurerm_databricks_workspace.test_ws
+  apim                     = azurerm_api_management.test_apim
 }

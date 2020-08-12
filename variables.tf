@@ -3,6 +3,10 @@ variable "databricks_workspace" {
   description = "Databricks workspace to deploy resources to."
 }
 
+variable "apim" {
+  description = "Terraform azurerm_api_management object to reference in deployment of notebook APIs."
+}
+
 # Optional variables
 
 variable "notebook_path" {
