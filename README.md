@@ -50,7 +50,7 @@ If a notebook is deployed, two APIM APIs are automatically deployed, which toget
 - The first API `create_job_api` sets up a notebook task job in your Databricks instance.
 - The second API `invoke_notebook_api` runs this job given its ID (1 by default).
 
-Both APIs can be fired with optional custom parameters immediately after deployment using the "Test" window of APIM in the Azure Portal, immediately after deployment.
+Both APIs can be fired with optional custom parameters immediately after deployment using the "Test" window of APIM in the Azure Portal.
 
 ## Providers
 
