@@ -92,92 +92,57 @@ resource "databricks_notebook" "notebook" {
   format    = "JUPYTER"
 }
 
-resource "azurerm_api_management_api" "notebook_api" {
-  name                = "invoke_notebook"
+resource "azurerm_api_management_api" "create_job_api" {
+  name                = "create_notebook_job"
   resource_group_name = var.apim.resource_group_name
   api_management_name = var.apim.name
   revision            = "1"
-  display_name        = "Notebook invocation API"
-  path                = "run"
+  display_name        = "Create job API"
+  path                = "create"
   protocols           = ["https"]
   service_url         = "${local.db_host}/api/2.0/jobs"
-  count     = var.notebook_path == "" ? 0 : 1
+  count               = var.notebook_path == "" ? 0 : 1
 
   import {
     content_format = "swagger-json"
     content_value  = <<EOT
       {
-
         "swagger": "2.0",
-
         "info": {
-
           "version": "1.0",
-
-          "title": "DatabricksNotebookInvoke",
-
+          "title": "DatabricksJobCreate",
           "contact": {}
-
         },
-
         "host": "${var.databricks_workspace.workspace_url}",
-
         "basePath": "/api/2.0/jobs",
-
         "securityDefinitions": {},
-
         "schemes": [
-
           "https"
-
         ],
-
         "consumes": [
-
           "application/json"
-
         ],
-
         "produces": [
-
           "application/json"
-
         ],
-
         "paths": {
-
           "/create": {
-
             "post": {
-
               "summary": "Databricks notebook task",
-
               "tags": [
-
                 "Misc"
-
               ],
 
               "operationId": "Databricksnotebooktask",
-
               "deprecated": false,
-
               "produces": [
-
                 "application/json"
-
               ],
-
               "consumes": [
-
                 "application/json"
-
               ],
-
               "parameters": [
-
                 {
-
                   "name": "Authorization",
 
                   "in": "header",
@@ -187,11 +152,8 @@ resource "azurerm_api_management_api" "notebook_api" {
                   "default": "Bearer ${databricks_token.notebook_invoke_token.token_value}",
 
                   "type": "string"
-
                 },
-
                 {
-
                   "name": "Content-Type",
 
                   "in": "header",
@@ -201,190 +163,210 @@ resource "azurerm_api_management_api" "notebook_api" {
                   "type": "string",
 
                   "description": ""
-
                 },
-
                 {
-
                   "name": "Body",
-
                   "in": "body",
-
                   "required": true,
-
                   "description": "",
-
                   "schema": {
-
                     "$ref": "#/definitions/DatabricksnotebooktaskRequest"
-
                   }
-
                 }
-
               ],
-
               "responses": {
-
                 "200": {
-
                   "description": "",
-
                   "headers": {}
-
                 }
-
               }
-
             }
-
           }
-
         },
-
         "definitions": {
-
           "DatabricksnotebooktaskRequest": {
-
             "title": "DatabricksnotebooktaskRequest",
-
             "example": {
-
               "name": "Notebook run job",
-
               "existing_cluster_id": "${databricks_cluster.standard_cluster.id}",
-
-              "task": {
-
-                "notebook_task": {
-
-                  "notebook_path": "/${var.notebook_name}"
-
-                }
-
-              }
-
-            },
-
-            "type": "object",
-
-            "properties": {
-
-              "name": {
-
-                "type": "string"
-
-              },
-
-              "existing_cluster_id": {
-
-                "type": "string"
-
-              },
-
-              "task": {
-
-                "$ref": "#/definitions/Task"
-
-              }
-
-            },
-
-            "required": [
-
-              "name",
-
-              "existing_cluster_id",
-
-              "task"
-
-            ]
-
-          },
-
-          "Task": {
-
-            "title": "Task",
-
-            "example": {
-
               "notebook_task": {
-
                 "notebook_path": "/${var.notebook_name}"
-
               }
-
             },
-
             "type": "object",
-
             "properties": {
-
-              "notebook_task": {
-
-                "$ref": "#/definitions/NotebookTask"
-
-              }
-
-            },
-
-            "required": [
-
-              "notebook_task"
-
-            ]
-
-          },
-
-          "NotebookTask": {
-
-            "title": "NotebookTask",
-
-            "example": {
-
-              "notebook_path": "/${var.notebook_name}"
-
-            },
-
-            "type": "object",
-
-            "properties": {
-
-              "notebook_path": {
-
+              "name": {
                 "type": "string"
-
+              },
+              "existing_cluster_id": {
+                "type": "string"
+              },
+              "task": {
+                "$ref": "#/definitions/Task"
               }
-
             },
-
             "required": [
-
-              "notebook_path"
-
+              "name",
+              "existing_cluster_id",
+              "task"
             ]
-
+          },
+          "Task": {
+            "title": "Task",
+            "example": {
+              "notebook_task": {
+                "notebook_path": "/${var.notebook_name}"
+              }
+            },
+            "type": "object",
+            "properties": {
+              "notebook_task": {
+                "$ref": "#/definitions/NotebookTask"
+              }
+            },
+            "required": [
+              "notebook_task"
+            ]
+          },
+          "NotebookTask": {
+            "title": "NotebookTask",
+            "example": {
+              "notebook_path": "/${var.notebook_name}"
+            },
+            "type": "object",
+            "properties": {
+              "notebook_path": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "notebook_path"
+            ]
           }
-
         },
-
         "tags": [
-
           {
-
             "name": "Misc",
-
             "description": ""
-
           }
-
         ]
-
       }        
       EOT
   }
   depends_on = [
     var.apim,
     databricks_notebook.notebook
+  ]
+}
+
+resource "azurerm_api_management_api" "invoke_notebook_api" {
+  name                = "invoke_notebook"
+  resource_group_name = var.apim.resource_group_name
+  api_management_name = var.apim.name
+  revision            = "1"
+  display_name        = "Run notebook API"
+  path                = "run"
+  protocols           = ["https"]
+  service_url         = "${local.db_host}/api/2.0/jobs"
+  count               = var.notebook_path == "" ? 0 : 1
+
+  import {
+    content_format = "swagger-json"
+    content_value  = <<EOT
+      {
+        "swagger": "2.0",
+        "info": {
+          "version": "1.0",
+          "title": "DatabricksJobRunNow",
+          "contact": {}
+        },
+        "host": "${var.databricks_workspace.workspace_url}",
+        "basePath": "/api/2.0/jobs",
+        "securityDefinitions": {},
+        "schemes": [
+          "https"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "paths": {
+          "/run-now": {
+            "post": {
+              "summary": "RunNow",
+              "tags": [
+                "Misc2"
+              ],
+              "operationId": "RunNow",
+              "deprecated": false,
+              "produces": [
+                "application/json"
+              ],
+              "parameters": [
+                {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "default": "Bearer ${databricks_token.notebook_invoke_token.token_value}",
+                  "type": "string"
+                },
+                {
+                  "name": "Body",
+                  "in": "body",
+                  "required": true,
+                  "description": "",
+                  "schema": {
+                    "$ref": "#/definitions/RunNowRequest"
+                  }
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "",
+                  "headers": {}
+                }
+              }
+            }
+          }
+        },
+        "definitions": {
+          "RunNowRequest": {
+            "title": "RunNowRequest",
+            "example": {
+              "job_id": 1,
+              "notebook_params": {
+                "": ""
+              }
+            },
+            "type": "object",
+            "properties": {
+              "job_id": {
+                "type": "integer",
+                "format": "int32"
+              },
+              "notebook_params": {
+                "type": "object"
+              }
+            },
+            "required": [
+              "job_id",
+              "notebook_params"
+            ]
+          }
+        },
+        "tags": [
+          {
+            "name": "Misc",
+            "description": ""
+          }
+        ]
+      }
+      
+      EOT
+  }
+  depends_on = [
+    azurerm_api_management_api.create_job_api
   ]
 }

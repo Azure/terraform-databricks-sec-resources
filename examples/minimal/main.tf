@@ -38,7 +38,7 @@ resource "azurerm_api_management" "test_apim" {
 # subscription in which the test resource group will be created,
 # which should have id == var.subscription_id
 module "terraform-databricks-sec-resources" {
-  source                   = "../../"
-  databricks_workspace     = azurerm_databricks_workspace.test_ws
-  apim                     = azurerm_api_management.test_apim
+  source               = "../../"
+  databricks_workspace = azurerm_databricks_workspace.test_ws
+  apim                 = azurerm_api_management.test_apim
 }
