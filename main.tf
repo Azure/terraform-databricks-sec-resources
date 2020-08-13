@@ -101,83 +101,48 @@ resource "azurerm_api_management_api" "create_job_api" {
   path                = "create"
   protocols           = ["https"]
   service_url         = "${local.db_host}/api/2.0/jobs"
-  count     = var.notebook_path == "" ? 0 : 1
+  count               = var.notebook_path == "" ? 0 : 1
 
   import {
     content_format = "swagger-json"
     content_value  = <<EOT
       {
-
         "swagger": "2.0",
-
         "info": {
-
           "version": "1.0",
-
           "title": "DatabricksJobCreate",
-
           "contact": {}
-
         },
-
         "host": "${var.databricks_workspace.workspace_url}",
-
         "basePath": "/api/2.0/jobs",
-
         "securityDefinitions": {},
-
         "schemes": [
-
           "https"
-
         ],
-
         "consumes": [
-
           "application/json"
-
         ],
-
         "produces": [
-
           "application/json"
-
         ],
-
         "paths": {
-
           "/create": {
-
             "post": {
-
               "summary": "Databricks notebook task",
-
               "tags": [
-
                 "Misc"
-
               ],
 
               "operationId": "Databricksnotebooktask",
-
               "deprecated": false,
-
               "produces": [
-
                 "application/json"
-
               ],
-
               "consumes": [
-
                 "application/json"
-
               ],
-
               "parameters": [
-
                 {
-
                   "name": "Authorization",
 
                   "in": "header",
@@ -187,11 +152,8 @@ resource "azurerm_api_management_api" "create_job_api" {
                   "default": "Bearer ${databricks_token.notebook_invoke_token.token_value}",
 
                   "type": "string"
-
                 },
-
                 {
-
                   "name": "Content-Type",
 
                   "in": "header",
@@ -201,181 +163,93 @@ resource "azurerm_api_management_api" "create_job_api" {
                   "type": "string",
 
                   "description": ""
-
                 },
-
                 {
-
                   "name": "Body",
-
                   "in": "body",
-
                   "required": true,
-
                   "description": "",
-
                   "schema": {
-
                     "$ref": "#/definitions/DatabricksnotebooktaskRequest"
-
                   }
-
                 }
-
               ],
-
               "responses": {
-
                 "200": {
-
                   "description": "",
-
                   "headers": {}
-
                 }
-
               }
-
             }
-
           }
-
         },
-
         "definitions": {
-
           "DatabricksnotebooktaskRequest": {
-
             "title": "DatabricksnotebooktaskRequest",
-
             "example": {
-
               "name": "Notebook run job",
-
               "existing_cluster_id": "${databricks_cluster.standard_cluster.id}",
-
               "notebook_task": {
-
                 "notebook_path": "/${var.notebook_name}"
-
               }
-
             },
-
             "type": "object",
-
             "properties": {
-
               "name": {
-
                 "type": "string"
-
               },
-
               "existing_cluster_id": {
-
                 "type": "string"
-
               },
-
               "task": {
-
                 "$ref": "#/definitions/Task"
-
               }
-
             },
-
             "required": [
-
               "name",
-
               "existing_cluster_id",
-
               "task"
-
             ]
-
           },
-
           "Task": {
-
             "title": "Task",
-
             "example": {
-
               "notebook_task": {
-
                 "notebook_path": "/${var.notebook_name}"
-
               }
-
             },
-
             "type": "object",
-
             "properties": {
-
               "notebook_task": {
-
                 "$ref": "#/definitions/NotebookTask"
-
               }
-
             },
-
             "required": [
-
               "notebook_task"
-
             ]
-
           },
-
           "NotebookTask": {
-
             "title": "NotebookTask",
-
             "example": {
-
               "notebook_path": "/${var.notebook_name}"
-
             },
-
             "type": "object",
-
             "properties": {
-
               "notebook_path": {
-
                 "type": "string"
-
               }
-
             },
-
             "required": [
-
               "notebook_path"
-
             ]
-
           }
-
         },
-
         "tags": [
-
           {
-
             "name": "Misc",
-
             "description": ""
-
           }
-
         ]
-
       }        
       EOT
   }
@@ -394,7 +268,7 @@ resource "azurerm_api_management_api" "invoke_notebook_api" {
   path                = "run"
   protocols           = ["https"]
   service_url         = "${local.db_host}/api/2.0/jobs"
-  count     = var.notebook_path == "" ? 0 : 1
+  count               = var.notebook_path == "" ? 0 : 1
 
   import {
     content_format = "swagger-json"
@@ -493,6 +367,6 @@ resource "azurerm_api_management_api" "invoke_notebook_api" {
       EOT
   }
   depends_on = [
-     azurerm_api_management_api.create_job_api
-   ]
+    azurerm_api_management_api.create_job_api
+  ]
 }
