@@ -45,12 +45,13 @@ export ARM_CLIENT_SECRET="your-client-secret"
 
 The module also provides the option to deploy a pre-created local [Jupyter notebook](https://jupyter.org/) to the workspace. This can contain any valid Jupyter notebook content. Use of variable `notebook_path` triggers this resource deployment, but as in the minimal example it can be foregone entirely, deploying just the workspace and clusters. For ease of getting started, an example notebook is provided at `./notebooks/notebook.ipynb`, and the complete example uploads this by default.
 
-If a notebook is deployed, two APIM APIs are automatically deployed, which together use the [Databricks Jobs](https://docs.databricks.com/jobs.html) API to invoke the notebook via an HTTP POST.
+If a notebook is deployed, three APIM APIs are automatically deployed with it, which together use the [Databricks Jobs](https://docs.databricks.com/jobs.html) API to invoke and get results from the notebook.
 
 - The first API `create_job_api` sets up a notebook task job in your Databricks instance.
 - The second API `invoke_notebook_api` runs this job given its ID (1 by default).
+- The third API `notebook_output_api`, given the ID of a run, retrieves any outputs from that notebook run.
 
-Both APIs can be fired with optional custom parameters immediately after deployment using the "Test" window of APIM in the Azure Portal.
+All APIs can be used with optional custom parameters immediately after deployment, through the "Test" window of APIM in the Azure Portal.
 
 ## Providers
 
