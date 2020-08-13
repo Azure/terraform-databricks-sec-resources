@@ -48,7 +48,7 @@ The module also provides the option to deploy a pre-created local [Jupyter noteb
 If a notebook is deployed, two APIM APIs are automatically deployed, which together use the [Databricks Jobs](https://docs.databricks.com/jobs.html) API to invoke the notebook via an HTTP POST.
 
 - The first API `create_job_api` sets up a notebook task job in your Databricks instance.
-- The second API `notebook invoke API` runs this job given its ID (1 by default).
+- The second API `invoke_notebook_api` runs this job given its ID (1 by default).
 
 Both APIs can be fired with optional custom parameters immediately after deployment using the "Test" window of APIM in the Azure Portal, immediately after deployment.
 
