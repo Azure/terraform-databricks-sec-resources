@@ -254,13 +254,9 @@ resource "azurerm_api_management_api" "create_job_api" {
 
               "existing_cluster_id": "${databricks_cluster.standard_cluster.id}",
 
-              "task": {
+              "notebook_task": {
 
-                "notebook_task": {
-
-                  "notebook_path": "/${var.notebook_name}"
-
-                }
+                "notebook_path": "/${var.notebook_name}"
 
               }
 
