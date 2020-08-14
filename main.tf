@@ -132,7 +132,6 @@ resource "azurerm_api_management_api" "create_job_api" {
               "tags": [
                 "Misc"
               ],
-
               "operationId": "Databricksnotebooktask",
               "deprecated": false,
               "produces": [
@@ -144,24 +143,16 @@ resource "azurerm_api_management_api" "create_job_api" {
               "parameters": [
                 {
                   "name": "Authorization",
-
                   "in": "header",
-
                   "required": true,
-
                   "default": "Bearer ${databricks_token.notebook_invoke_token.token_value}",
-
                   "type": "string"
                 },
                 {
                   "name": "Content-Type",
-
                   "in": "header",
-
                   "required": true,
-
                   "type": "string",
-
                   "description": ""
                 },
                 {
@@ -363,10 +354,94 @@ resource "azurerm_api_management_api" "invoke_notebook_api" {
           }
         ]
       }
-      
       EOT
   }
   depends_on = [
     azurerm_api_management_api.create_job_api
+  ]
+}
+
+resource "azurerm_api_management_api" "notebook_output_api" {
+  name                = "get_notebook_output"
+  resource_group_name = var.apim.resource_group_name
+  api_management_name = var.apim.name
+  revision            = "1"
+  display_name        = "Notebook output API"
+  path                = "get-output"
+  protocols           = ["https"]
+  service_url         = "${local.db_host}/api/2.0/jobs/runs"
+  count               = var.notebook_path == "" ? 0 : 1
+
+  import {
+    content_format = "swagger-json"
+    content_value  = <<EOT
+      {
+        "swagger": "2.0",
+        "info": {
+          "version": "1.0",
+          "title": "DatabricksGetRunOutput",
+          "contact": {}
+        },
+        "host": "${var.databricks_workspace.workspace_url}",
+        "basePath": "/api/2.0/jobs/runs",
+        "securityDefinitions": {},
+        "schemes": [
+          "https"
+        ],
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "paths": {
+          "/get-output": {
+            "get": {
+              "summary": "DatabricksGetRunOutput",
+              "tags": [
+                "Misc"
+              ],
+              "operationId": "DatabricksGetRunOutput",
+              "deprecated": false,
+              "produces": [
+                "application/json"
+              ],
+              "parameters": [
+                {
+                  "name": "Authorization",
+                  "in": "header",
+                  "required": true,
+                  "default": "Bearer ${databricks_token.notebook_invoke_token.token_value}",
+                  "type": "string"
+                },
+                {
+                  "name": "run_id",
+                  "in": "query",
+                  "required": true,
+                  "type": "integer",
+                  "format": "int32",
+                  "description": ""
+                }
+              ],
+              "responses": {
+                "200": {
+                  "description": "",
+                  "headers": {}
+                }
+              }
+            }
+          }
+        },
+        "tags": [
+          {
+            "name": "Misc",
+            "description": ""
+          }
+        ]
+      }      
+      EOT
+  }
+  depends_on = [
+    azurerm_api_management_api.invoke_notebook_api
   ]
 }
