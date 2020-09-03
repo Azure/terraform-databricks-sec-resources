@@ -36,6 +36,39 @@ resource "databricks_token" "notebook_invoke_token" {
   comment          = "Temporary auth token for notebook job invocation API"
 }
 
+resource "databricks_secret_scope" "mount_scope" {
+  name                     = "mounting"
+  initial_manage_principal = "users"
+}
+
+resource "databricks_secret" "mount_service_principal_key" {
+  key          = "mounting_service_principal_key"
+  string_value = "${var.ARM_CLIENT_SECRET}"
+  scope        = databricks_secret_scope.mount_scope.name
+}
+
+resource "databricks_azure_adls_gen2_mount" "libraries_mount" {
+  container_name         = var.libraries_container_name
+  storage_account_name   = var.data_lake_name
+  mount_name             = "libraries"
+  tenant_id              = data.azurerm_client_config.current.tenant_id
+  client_id              = data.azurerm_client_config.current.client_id
+  client_secret_scope    = databricks_secret_scope.mount_scope.name
+  client_secret_key      = databricks_secret.mount_service_principal_key.key
+  initialize_file_system = true
+}
+
+resource "databricks_azure_adls_gen2_mount" "data_mount" {
+  container_name         = var.data_container_name
+  storage_account_name   = var.data_lake_name
+  mount_name             = "data"
+  tenant_id              = data.azurerm_client_config.current.tenant_id
+  client_id              = data.azurerm_client_config.current.client_id
+  client_secret_scope    = databricks_secret_scope.mount_scope.name
+  client_secret_key      = databricks_secret.mount_service_principal_key.key
+  initialize_file_system = true
+}
+
 resource "null_resource" "main" {
   triggers = {
     cluster_default_packages = join(", ", var.cluster_default_packages)
@@ -44,7 +77,7 @@ resource "null_resource" "main" {
     command = "${local.upload_script_path} ${path.module} ${join(", ", var.cluster_default_packages)} ${local.db_host} ${databricks_token.upload_auth_token.token_value}"
   }
   count      = join(", ", var.cluster_default_packages) != "" ? 1 : 0
-  depends_on = [databricks_token.upload_auth_token]
+  depends_on = [databricks_token.upload_auth_token, databricks_azure_adls_gen2_mount.libraries_mount]
 }
 
 resource "databricks_cluster" "standard_cluster" {
@@ -94,8 +127,8 @@ resource "databricks_notebook" "notebook" {
 
 resource "azurerm_api_management_api" "create_job_api" {
   name                = "create_notebook_job"
-  resource_group_name = var.apim.resource_group_name
-  api_management_name = var.apim.name
+  resource_group_name = var.api_management_resource_group_name
+  api_management_name = var.api_management_name
   revision            = "1"
   display_name        = "Create job API"
   path                = "create"
@@ -252,8 +285,8 @@ resource "azurerm_api_management_api" "create_job_api" {
 
 resource "azurerm_api_management_api" "invoke_notebook_api" {
   name                = "invoke_notebook"
-  resource_group_name = var.apim.resource_group_name
-  api_management_name = var.apim.name
+  resource_group_name = var.api_management_resource_group_name
+  api_management_name = var.api_management_name
   revision            = "1"
   display_name        = "Run notebook API"
   path                = "run"
@@ -363,8 +396,8 @@ resource "azurerm_api_management_api" "invoke_notebook_api" {
 
 resource "azurerm_api_management_api" "notebook_output_api" {
   name                = "get_notebook_output"
-  resource_group_name = var.apim.resource_group_name
-  api_management_name = var.apim.name
+  resource_group_name = var.api_management_resource_group_name
+  api_management_name = var.api_management_name
   revision            = "1"
   display_name        = "Notebook output API"
   path                = "get-output"
