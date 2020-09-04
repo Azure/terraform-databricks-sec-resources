@@ -62,7 +62,7 @@ resource "databricks_cluster" "standard_cluster" {
   depends_on = [time_sleep.wait]
 }
 
-resource "databricks_azure_adls_gen2_mount" "standard_cluster_libraries_mount" {
+resource "databricks_azure_adls_gen2_mount" "libraries_mount" {
   container_name         = var.libraries_container_name
   storage_account_name   = var.data_lake_name
   mount_name             = "libraries"
@@ -74,7 +74,7 @@ resource "databricks_azure_adls_gen2_mount" "standard_cluster_libraries_mount" {
   initialize_file_system = true
 }
 
-resource "databricks_azure_adls_gen2_mount" "standard_cluser_data_mount" {
+resource "databricks_azure_adls_gen2_mount" "data_mount" {
   container_name         = var.data_container_name
   storage_account_name   = var.data_lake_name
   mount_name             = "data"
@@ -108,30 +108,6 @@ resource "databricks_cluster" "high_concurrency_cluster" {
   depends_on = [time_sleep.wait]
 }
 
-resource "databricks_azure_adls_gen2_mount" "hc_cluster_libraries_mount" {
-  container_name         = var.libraries_container_name
-  storage_account_name   = var.data_lake_name
-  mount_name             = "libraries"
-  tenant_id              = data.azurerm_client_config.current.tenant_id
-  client_id              = data.azurerm_client_config.current.client_id
-  client_secret_scope    = databricks_secret_scope.mount_scope.name
-  client_secret_key      = databricks_secret.mount_service_principal_key.key
-  cluster_id             = databricks_cluster.high_concurrency_cluster.id
-  initialize_file_system = true
-}
-
-resource "databricks_azure_adls_gen2_mount" "hc_cluser_data_mount" {
-  container_name         = var.data_container_name
-  storage_account_name   = var.data_lake_name
-  mount_name             = "data"
-  tenant_id              = data.azurerm_client_config.current.tenant_id
-  client_id              = data.azurerm_client_config.current.client_id
-  client_secret_scope    = databricks_secret_scope.mount_scope.name
-  client_secret_key      = databricks_secret.mount_service_principal_key.key
-  cluster_id             = databricks_cluster.high_concurrency_cluster.id
-  initialize_file_system = true
-}
-
 resource "null_resource" "main" {
   triggers = {
     cluster_default_packages = join(", ", var.cluster_default_packages)
@@ -141,10 +117,8 @@ resource "null_resource" "main" {
   }
   count      = join(", ", var.cluster_default_packages) != "" ? 1 : 0
   depends_on = [databricks_token.upload_auth_token, 
-  databricks_azure_adls_gen2_mount.hc_cluster_libraries_mount,
-  databricks_azure_adls_gen2_mount.hc_cluser_data_mount,
-  databricks_azure_adls_gen2_mount.standard_cluster_libraries_mount,
-  databricks_azure_adls_gen2_mount.standard_cluser_data_mount]
+  databricks_azure_adls_gen2_mount.libraries_mount
+  ]
 }
 
 # If notebook_path given, upload local Jupyter notebook on deployment
