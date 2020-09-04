@@ -14,7 +14,13 @@ variable "api_management_resource_group_name" {
 }
 
 variable "data_lake_name" {
+  type        = string
   description = "The name of an Azure Storage Account Datalake Storage Gen2 instance."
+}
+
+variable "service_principal_secret" {
+  type = string
+  description = "The secret for the service principal to stored as a secret within Databricks."
 }
 
 # Optional variables

@@ -43,7 +43,7 @@ resource "databricks_secret_scope" "mount_scope" {
 
 resource "databricks_secret" "mount_service_principal_key" {
   key          = "mounting_service_principal_key"
-  string_value = "${var.ARM_CLIENT_SECRET}"
+  string_value = var.service_principal_secret
   scope        = databricks_secret_scope.mount_scope.name
 }
 
@@ -278,7 +278,6 @@ resource "azurerm_api_management_api" "create_job_api" {
       EOT
   }
   depends_on = [
-    var.apim,
     databricks_notebook.notebook
   ]
 }
