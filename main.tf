@@ -82,7 +82,7 @@ resource "databricks_azure_adls_gen2_mount" "standard_cluser_data_mount" {
   client_id              = data.azurerm_client_config.current.client_id
   client_secret_scope    = databricks_secret_scope.mount_scope.name
   client_secret_key      = databricks_secret.mount_service_principal_key.key
-  cluster                = databricks_cluster.standard_cluster.id
+  cluster_id             = databricks_cluster.standard_cluster.id
   initialize_file_system = true
 }
 
@@ -128,7 +128,7 @@ resource "databricks_azure_adls_gen2_mount" "hc_cluser_data_mount" {
   client_id              = data.azurerm_client_config.current.client_id
   client_secret_scope    = databricks_secret_scope.mount_scope.name
   client_secret_key      = databricks_secret.mount_service_principal_key.key
-  cluster                = databricks_cluster.high_concurrency_cluster.id
+  cluster_id             = databricks_cluster.high_concurrency_cluster.id
   initialize_file_system = true
 }
 
@@ -140,7 +140,11 @@ resource "null_resource" "main" {
     command = "${local.upload_script_path} ${path.module} ${join(", ", var.cluster_default_packages)} ${local.db_host} ${databricks_token.upload_auth_token.token_value}"
   }
   count      = join(", ", var.cluster_default_packages) != "" ? 1 : 0
-  depends_on = [databricks_token.upload_auth_token, databricks_azure_adls_gen2_mount.hc_cluster_libraries_mount, databricks_azure_adls_gen2_mount.hc_cluster_data_mount, databricks_azure_adls_gen2_mount.standard_cluster_libraries_mount, databricks_azure_adls_gen2_mount.standard_cluster_data_mount]
+  depends_on = [databricks_token.upload_auth_token, 
+  databricks_azure_adls_gen2_mount.hc_cluster_libraries_mount,
+  databricks_azure_adls_gen2_mount.hc_cluser_data_mount,
+  databricks_azure_adls_gen2_mount.standard_cluster_libraries_mount,
+  databricks_azure_adls_gen2_mount.standard_cluser_data_mount]
 }
 
 # If notebook_path given, upload local Jupyter notebook on deployment
