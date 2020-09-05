@@ -7,7 +7,7 @@
 
 set -e
 
-echo "Downloading custom whls for clusters..."
+echo "Downloading Packages."
 
 mkdir -p defaultpackages && cd defaultpackages
 
@@ -25,19 +25,29 @@ do
     rm shasum.txt
 done
 
-cd ..
+ls -la
 
-echo "Downloaded. Uploading to dbfs..."
+echo "Downloaded Packages."
+
+cd ..
 
 # dbfs auth
 export DATABRICKS_HOST=$3 # host
 export DATABRICKS_TOKEN=$4 # PAT
 
+echo "Zip Package Folder to defaultpackages.wheelhouse.zip"
 # Upload ./defaultpackages wheelhouse to dbfs
 zip -r defaultpackages.wheelhouse.zip defaultpackages
+
+echo "Packages Zipped."
+
+ls -la
+
+echo "Uploading to defaultpackages.wheelhouse.zip to ${$3}"
+
 dbfs cp -r --overwrite defaultpackages.wheelhouse.zip dbfs:/mnt/libraries/defaultpackages.wheelhouse.zip
 
-echo "Uploaded!"
+echo "defaultpackes.wheelhouse.zip Uploaded."
 
 rm -rf defaultpackages
 rm -rf defaultpackages.wheelhouse.zip
