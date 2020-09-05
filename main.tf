@@ -113,7 +113,7 @@ resource "null_resource" "main" {
     cluster_default_packages = join(", ", var.cluster_default_packages)
   }
   provisioner "local-exec" {
-    command = "${local.upload_script_path} ${path.module} ${join(", ", var.cluster_default_packages)} ${local.db_host} ${databricks_token.upload_auth_token.token_value}"
+    command = "${local.upload_script_path} ${path.module} ${join(", ", var.cluster_default_packages)} '${local.db_host}' '${databricks_token.upload_auth_token.token_value}'"
   }
   count      = join(", ", var.cluster_default_packages) != "" ? 1 : 0
   depends_on = [databricks_token.upload_auth_token, 
