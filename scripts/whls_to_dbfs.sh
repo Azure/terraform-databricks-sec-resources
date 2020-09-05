@@ -7,6 +7,9 @@
 
 set -e
 
+echo "Target Databricks Host:"
+echo "$3"
+
 echo "Downloading Packages."
 
 mkdir -p defaultpackages && cd defaultpackages
