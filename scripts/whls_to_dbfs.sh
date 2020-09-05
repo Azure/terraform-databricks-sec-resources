@@ -43,7 +43,8 @@ echo "Packages Zipped."
 
 ls -la
 
-echo "Uploading to defaultpackages.wheelhouse.zip to ${$3}"
+echo "Uploading to defaultpackages.wheelhouse.zip to:"
+echo "$3"
 
 dbfs cp -r --overwrite defaultpackages.wheelhouse.zip dbfs:/mnt/libraries/defaultpackages.wheelhouse.zip
 
