@@ -8,7 +8,7 @@
 set -e
 
 echo "Target Databricks Host:"
-echo "$3"
+echo "$2"
 
 echo "Downloading Packages."
 
@@ -16,7 +16,7 @@ mkdir -p defaultpackages && cd defaultpackages
 
 # First argument should be a comma-separated string of remote URIs
 IFS=', '
-read -ra ADDR <<< "$2"
+read -ra ADDR <<< "$1"
 for uri in "${ADDR[@]}"; 
 do
     # Download whl
@@ -35,8 +35,8 @@ echo "Downloaded Packages."
 cd ..
 
 # dbfs auth
-export DATABRICKS_HOST=$3 # host
-export DATABRICKS_TOKEN=$4 # PAT
+export DATABRICKS_HOST=$2 # host
+export DATABRICKS_TOKEN=$3 # PAT
 
 echo "Zip Package Folder to defaultpackages.wheelhouse.zip"
 # Upload ./defaultpackages wheelhouse to dbfs
@@ -47,7 +47,7 @@ echo "Packages Zipped."
 ls -la
 
 echo "Uploading to defaultpackages.wheelhouse.zip to:"
-echo "$3"
+echo "$2"
 
 dbfs cp -r --overwrite defaultpackages.wheelhouse.zip dbfs:/mnt/libraries/defaultpackages.wheelhouse.zip
 
