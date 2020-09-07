@@ -41,7 +41,7 @@ resource "databricks_token" "notebook_invoke_token" {
 }
 
 resource "databricks_secret_scope" "mount_scope" {
-  name                     = "mounting"
+  name                     = "terraform"
   initial_manage_principal = "users"
 }
 
@@ -49,6 +49,49 @@ resource "databricks_secret" "mount_service_principal_key" {
   key          = "mounting_service_principal_key"
   string_value = var.service_principal_secret
   scope        = databricks_secret_scope.mount_scope.name
+}
+
+resource "databricks_cluster" "mounting_cluster" {
+  cluster_name            = "utility_mounting_cluster"
+  spark_version           = "6.4.x-scala2.11"
+  node_type_id            = "Standard_DS3_v2"
+  autotermination_minutes = 15
+  depends_on              = [time_sleep.wait]
+  num_workers             = 1
+}
+
+resource "databricks_azure_adls_gen2_mount" "libraries_mount" {
+  container_name         = var.libraries_container_name
+  storage_account_name   = var.data_lake_name
+  mount_name             = local.libraries_mount
+  tenant_id              = data.azurerm_client_config.current.tenant_id
+  client_id              = data.azurerm_client_config.current.client_id
+  client_secret_scope    = databricks_secret_scope.mount_scope.name
+  client_secret_key      = databricks_secret.mount_service_principal_key.key
+  cluster_id             = databricks_cluster.mounting_cluster.id
+  initialize_file_system = true
+}
+
+resource "databricks_azure_adls_gen2_mount" "data_mount" {
+  container_name         = var.data_container_name
+  storage_account_name   = var.data_lake_name
+  mount_name             = local.data_mount
+  tenant_id              = data.azurerm_client_config.current.tenant_id
+  client_id              = data.azurerm_client_config.current.client_id
+  client_secret_scope    = databricks_secret_scope.mount_scope.name
+  client_secret_key      = databricks_secret.mount_service_principal_key.key
+  cluster_id             = databricks_cluster.mounting_cluster.id
+  initialize_file_system = true
+}
+
+resource "null_resource" "main" {
+  provisioner "local-exec" {
+    command = local.command_to_execute
+  }
+  count = join(", ", var.cluster_default_packages) != "" ? 1 : 0
+  depends_on = [databricks_token.upload_auth_token,
+    databricks_azure_adls_gen2_mount.libraries_mount
+  ]
 }
 
 resource "databricks_cluster" "standard_cluster" {
@@ -63,31 +106,7 @@ resource "databricks_cluster" "standard_cluster" {
   library {
     whl = "dbfs:/mnt/libraries/defaultpackages.wheelhouse.zip"
   }
-  depends_on = [time_sleep.wait]
-}
-
-resource "databricks_azure_adls_gen2_mount" "libraries_mount" {
-  container_name         = var.libraries_container_name
-  storage_account_name   = var.data_lake_name
-  mount_name             = local.libraries_mount
-  tenant_id              = data.azurerm_client_config.current.tenant_id
-  client_id              = data.azurerm_client_config.current.client_id
-  client_secret_scope    = databricks_secret_scope.mount_scope.name
-  client_secret_key      = databricks_secret.mount_service_principal_key.key
-  cluster_id             = databricks_cluster.standard_cluster.id
-  initialize_file_system = true
-}
-
-resource "databricks_azure_adls_gen2_mount" "data_mount" {
-  container_name         = var.data_container_name
-  storage_account_name   = var.data_lake_name
-  mount_name             = local.data_mount
-  tenant_id              = data.azurerm_client_config.current.tenant_id
-  client_id              = data.azurerm_client_config.current.client_id
-  client_secret_scope    = databricks_secret_scope.mount_scope.name
-  client_secret_key      = databricks_secret.mount_service_principal_key.key
-  cluster_id             = databricks_cluster.standard_cluster.id
-  initialize_file_system = true
+  depends_on = [time_sleep.wait, databricks_azure_adls_gen2_mount.libraries_mount, null_resource.main]
 }
 
 # Create high concurrency cluster with AAD credential passthrough enabled
@@ -109,17 +128,7 @@ resource "databricks_cluster" "high_concurrency_cluster" {
   library {
     whl = "dbfs:/mnt/libraries/defaultpackages.wheelhouse.zip"
   }
-  depends_on = [time_sleep.wait]
-}
-
-resource "null_resource" "main" {
-  provisioner "local-exec" {
-    command = local.command_to_execute
-  }
-  count = join(", ", var.cluster_default_packages) != "" ? 1 : 0
-  depends_on = [databricks_token.upload_auth_token,
-    databricks_azure_adls_gen2_mount.libraries_mount
-  ]
+  depends_on = [time_sleep.wait, databricks_azure_adls_gen2_mount.libraries_mount, null_resource.main]
 }
 
 # If notebook_path given, upload local Jupyter notebook on deployment
