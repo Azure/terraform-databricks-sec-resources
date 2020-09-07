@@ -130,6 +130,7 @@ resource "databricks_notebook" "notebook" {
   mkdirs    = true
   overwrite = false
   format    = "SOURCE"
+  language  = "PYTHON"
 }
 
 resource "azurerm_api_management_api" "create_job_api" {
