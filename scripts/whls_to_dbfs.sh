@@ -7,9 +7,6 @@
 
 set -e
 
-echo "Target Databricks Host:"
-echo "$2"
-
 echo "Downloading Packages."
 
 mkdir -p defaultpackages && cd defaultpackages
@@ -34,10 +31,6 @@ echo "Downloaded Packages."
 
 cd ..
 
-# dbfs auth
-export DATABRICKS_HOST=$2 # host
-export DATABRICKS_TOKEN=$3 # PAT
-
 echo "Zip Package Folder to defaultpackages.wheelhouse.zip"
 # Upload ./defaultpackages wheelhouse to dbfs
 zip -r defaultpackages.wheelhouse.zip defaultpackages
@@ -46,10 +39,7 @@ echo "Packages Zipped."
 
 ls -la
 
-echo "Uploading to defaultpackages.wheelhouse.zip to:"
-echo "$2"
-
-dbfs cp -r --overwrite defaultpackages.wheelhouse.zip dbfs:/mnt/libraries/defaultpackages.wheelhouse.zip
+az storage blob upload --container-name "$3" --file "defaultpackages.wheelhouse.zip" --name "defaultpackages.wheelhouse.zip" --account-name "$2" --auth-mode "login" --subscription "$ARM_SUBSCRIPTION_ID"
 
 echo "defaultpackes.wheelhouse.zip Uploaded."
 

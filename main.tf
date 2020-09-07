@@ -12,7 +12,9 @@ locals {
   db_host            = format("%s%s", "https://", var.databricks_workspace.workspace_url)
   upload_script_path = var.whl_upload_script_path == "" ? "${path.module}/scripts/whls_to_dbfs.sh" : var.whl_upload_script_path
   packages           = join(", ", var.cluster_default_packages)
-  command_to_execute = join(" ", [local.upload_script_path, "\"${local.packages}\"", local.db_host, databricks_token.upload_auth_token.token_value])
+  command_to_execute = join(" ", [local.upload_script_path, "\"${local.packages}\"", var.data_lake_name, local.libraries_mount])
+  libraries_mount    = "libraries"
+  data_mount         = "data"
 }
 
 module "naming" {
@@ -67,7 +69,7 @@ resource "databricks_cluster" "standard_cluster" {
 resource "databricks_azure_adls_gen2_mount" "libraries_mount" {
   container_name         = var.libraries_container_name
   storage_account_name   = var.data_lake_name
-  mount_name             = "libraries"
+  mount_name             = local.libraries_mount
   tenant_id              = data.azurerm_client_config.current.tenant_id
   client_id              = data.azurerm_client_config.current.client_id
   client_secret_scope    = databricks_secret_scope.mount_scope.name
@@ -79,7 +81,7 @@ resource "databricks_azure_adls_gen2_mount" "libraries_mount" {
 resource "databricks_azure_adls_gen2_mount" "data_mount" {
   container_name         = var.data_container_name
   storage_account_name   = var.data_lake_name
-  mount_name             = "data"
+  mount_name             = local.data_mount
   tenant_id              = data.azurerm_client_config.current.tenant_id
   client_id              = data.azurerm_client_config.current.client_id
   client_secret_scope    = databricks_secret_scope.mount_scope.name
