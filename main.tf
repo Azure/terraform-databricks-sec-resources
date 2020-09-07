@@ -1,5 +1,5 @@
 provider "databricks" {
-  version = "0.2.0"
+  version = "0.2.4"
   azure_auth = {
     workspace_name         = var.databricks_workspace.name
     resource_group         = var.databricks_workspace.resource_group_name
@@ -41,7 +41,7 @@ resource "databricks_token" "notebook_invoke_token" {
 }
 
 resource "databricks_secret_scope" "mount_scope" {
-  name                     = "mounting"
+  name                     = "terraform"
   initial_manage_principal = "users"
 }
 
@@ -51,19 +51,13 @@ resource "databricks_secret" "mount_service_principal_key" {
   scope        = databricks_secret_scope.mount_scope.name
 }
 
-resource "databricks_cluster" "standard_cluster" {
-  cluster_name            = module.naming.databricks_standard_cluster.name
+resource "databricks_cluster" "mounting_cluster" {
+  cluster_name            = "utility_mounting_cluster"
   spark_version           = "6.4.x-scala2.11"
-  node_type_id            = "Standard_DS13_v2"
-  autotermination_minutes = 30
-  autoscale {
-    min_workers = 1
-    max_workers = 3
-  }
-  library_whl {
-    path = "dbfs:/mnt/libraries/defaultpackages.wheelhouse.zip"
-  }
-  depends_on = [time_sleep.wait]
+  node_type_id            = "Standard_DS3_v2"
+  autotermination_minutes = 15
+  depends_on              = [time_sleep.wait]
+  num_workers             = 1
 }
 
 resource "databricks_azure_adls_gen2_mount" "libraries_mount" {
@@ -74,7 +68,7 @@ resource "databricks_azure_adls_gen2_mount" "libraries_mount" {
   client_id              = data.azurerm_client_config.current.client_id
   client_secret_scope    = databricks_secret_scope.mount_scope.name
   client_secret_key      = databricks_secret.mount_service_principal_key.key
-  cluster_id             = databricks_cluster.standard_cluster.id
+  cluster_id             = databricks_cluster.mounting_cluster.id
   initialize_file_system = true
 }
 
@@ -86,8 +80,33 @@ resource "databricks_azure_adls_gen2_mount" "data_mount" {
   client_id              = data.azurerm_client_config.current.client_id
   client_secret_scope    = databricks_secret_scope.mount_scope.name
   client_secret_key      = databricks_secret.mount_service_principal_key.key
-  cluster_id             = databricks_cluster.standard_cluster.id
+  cluster_id             = databricks_cluster.mounting_cluster.id
   initialize_file_system = true
+}
+
+resource "null_resource" "main" {
+  provisioner "local-exec" {
+    command = local.command_to_execute
+  }
+  count = join(", ", var.cluster_default_packages) != "" ? 1 : 0
+  depends_on = [databricks_token.upload_auth_token,
+    databricks_azure_adls_gen2_mount.libraries_mount
+  ]
+}
+
+resource "databricks_cluster" "standard_cluster" {
+  cluster_name            = module.naming.databricks_standard_cluster.name
+  spark_version           = "6.4.x-scala2.11"
+  node_type_id            = "Standard_DS13_v2"
+  autotermination_minutes = 30
+  autoscale {
+    min_workers = 1
+    max_workers = 3
+  }
+  library {
+    whl = "dbfs:/mnt/libraries/defaultpackages.wheelhouse.zip"
+  }
+  depends_on = [time_sleep.wait, databricks_azure_adls_gen2_mount.libraries_mount, null_resource.main]
 }
 
 # Create high concurrency cluster with AAD credential passthrough enabled
@@ -106,20 +125,10 @@ resource "databricks_cluster" "high_concurrency_cluster" {
     "spark.databricks.passthrough.enabled" : true
     "spark.databricks.pyspark.enableProcessIsolation" : true
   }
-  library_whl {
-    path = "dbfs:/mnt/libraries/defaultpackages.wheelhouse.zip"
+  library {
+    whl = "dbfs:/mnt/libraries/defaultpackages.wheelhouse.zip"
   }
-  depends_on = [time_sleep.wait]
-}
-
-resource "null_resource" "main" {
-  provisioner "local-exec" {
-    command = local.command_to_execute
-  }
-  count = join(", ", var.cluster_default_packages) != "" ? 1 : 0
-  depends_on = [databricks_token.upload_auth_token,
-    databricks_azure_adls_gen2_mount.libraries_mount
-  ]
+  depends_on = [time_sleep.wait, databricks_azure_adls_gen2_mount.libraries_mount, null_resource.main]
 }
 
 # If notebook_path given, upload local Jupyter notebook on deployment
@@ -129,7 +138,8 @@ resource "databricks_notebook" "notebook" {
   path      = "/${var.notebook_name}"
   mkdirs    = true
   overwrite = false
-  format    = "JUPYTER"
+  format    = "SOURCE"
+  language  = "PYTHON"
 }
 
 resource "azurerm_api_management_api" "create_job_api" {
