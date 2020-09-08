@@ -19,7 +19,7 @@ locals {
   #Upload Notebook locals
   notebook_upload_script_path = "${path.module}/scripts/upload_notebook.sh"
   notebook_content_path       = var.notebook_path
-  upload_notebook_command     = join(" ", [local.notebook_upload_script_path, local.databricks_host, "/${var.notebook_name}", local.notebook_content_path])
+  upload_notebook_command     = join(" ", [local.notebook_upload_script_path, local.databricks_host, "\"/${var.notebook_name}\"", local.notebook_content_path])
 
   #Mount locals
   libraries_mount    = "libraries"
