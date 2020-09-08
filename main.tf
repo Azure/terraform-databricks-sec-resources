@@ -142,11 +142,11 @@ resource "databricks_cluster" "high_concurrency_cluster" {
 resource "null_resource" "upload_notebook" {
   provisioner "local-exec" {
     command = local.upload_notebook_command
-  }
-
-  #Passing env variable to avoid token leakage on apply
-  environment = {
-    DATABRICKS_TOKEN = "${databricks_token.upload_auth_token.token_value}"
+    
+    #Passing env variable to avoid token leakage on apply
+    environment = {
+      DATABRICKS_TOKEN = "${databricks_token.upload_auth_token.token_value}"
+    }
   }
 
   count = var.notebook_path == "" ? 0 : 1
