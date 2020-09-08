@@ -9,10 +9,19 @@ provider "databricks" {
 }
 
 locals {
-  db_host            = format("%s%s", "https://", var.databricks_workspace.workspace_url)
-  upload_script_path = var.whl_upload_script_path == "" ? "${path.module}/scripts/whls_to_dbfs.sh" : var.whl_upload_script_path
-  packages           = join(", ", var.cluster_default_packages)
-  command_to_execute = join(" ", [local.upload_script_path, "\"${local.packages}\"", var.data_lake_name, local.libraries_mount])
+  databricks_host            = format("%s%s", "https://", var.databricks_workspace.workspace_url)
+
+  #Upload whl locals
+  whl_upload_script_path     = var.whl_upload_script_path == "" ? "${path.module}/scripts/whls_to_dbfs.sh" : var.whl_upload_script_path
+  packages                   = join(", ", var.cluster_default_packages)
+  upload_whl_dbfs_command    = join(" ", [local.whl_upload_script_path, "\"${local.packages}\"", var.data_lake_name, local.libraries_mount])
+
+  #Upload Notebook locals
+  notebook_upload_script_path = "${path.module}/scripts/upload_notebook.sh"
+  notebook_content            = filebase64("${path.module}/${var.notebook_path}")
+  uploade_notebook_command    = join(" ", [local.notebook_upload_script_path, local.databricks_host, local.databricks_token.upload_auth_token.token_value, "/${var.notebook_name}", local.notebook_content])
+
+  #Mount locals
   libraries_mount    = "libraries"
   data_mount         = "data"
 }
@@ -86,12 +95,10 @@ resource "databricks_azure_adls_gen2_mount" "data_mount" {
 
 resource "null_resource" "main" {
   provisioner "local-exec" {
-    command = local.command_to_execute
+    command = local.upload_whl_dbfs_command
   }
   count = join(", ", var.cluster_default_packages) != "" ? 1 : 0
-  depends_on = [databricks_token.upload_auth_token,
-    databricks_azure_adls_gen2_mount.libraries_mount
-  ]
+  depends_on = [databricks_azure_adls_gen2_mount.libraries_mount]
 }
 
 resource "databricks_cluster" "standard_cluster" {
@@ -132,14 +139,11 @@ resource "databricks_cluster" "high_concurrency_cluster" {
 }
 
 # If notebook_path given, upload local Jupyter notebook on deployment
-resource "databricks_notebook" "notebook" {
-  count     = var.notebook_path == "" ? 0 : 1
-  content   = filebase64("${path.module}/${var.notebook_path}")
-  path      = "/${var.notebook_name}"
-  mkdirs    = true
-  overwrite = false
-  format    = "SOURCE"
-  language  = "PYTHON"
+resource "null_resource" "main" {
+  provisioner "local-exec" {
+    command = local.uploade_notebook_command
+  }
+  count = var.notebook_path == "" ? 0 : 1
 }
 
 resource "azurerm_api_management_api" "create_job_api" {
@@ -150,7 +154,7 @@ resource "azurerm_api_management_api" "create_job_api" {
   display_name        = "Create job API"
   path                = "create"
   protocols           = ["https"]
-  service_url         = "${local.db_host}/api/2.0/jobs"
+  service_url         = "${local.databricks_host}/api/2.0/jobs"
   count               = var.notebook_path == "" ? 0 : 1
 
   import {
@@ -307,7 +311,7 @@ resource "azurerm_api_management_api" "invoke_notebook_api" {
   display_name        = "Run notebook API"
   path                = "run"
   protocols           = ["https"]
-  service_url         = "${local.db_host}/api/2.0/jobs"
+  service_url         = "${local.databricks_host}/api/2.0/jobs"
   count               = var.notebook_path == "" ? 0 : 1
 
   import {
@@ -418,7 +422,7 @@ resource "azurerm_api_management_api" "notebook_output_api" {
   display_name        = "Notebook output API"
   path                = "get-output"
   protocols           = ["https"]
-  service_url         = "${local.db_host}/api/2.0/jobs/runs"
+  service_url         = "${local.databricks_host}/api/2.0/jobs/runs"
   count               = var.notebook_path == "" ? 0 : 1
 
   import {
