@@ -6,6 +6,8 @@
 
 set -e
 
+pwd
+
 BASE64_CONTENT="$(base64 < $3)"
 
 IMPORT_PAYLOAD='{"content": '"\""$BASE64_CONTENT"\""',"path": '"\""$2"\""',"overwrite": true,"format": "JUPYTER"}'
