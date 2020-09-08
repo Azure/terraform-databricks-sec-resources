@@ -13,16 +13,26 @@ mkdir -p defaultpackages && cd defaultpackages
 
 # First argument should be a comma-separated string of remote URIs
 IFS=', '
+
+#NOT IDEAL:Databricks expects to see a .whl file in the zip. To avoid string manipulation when a passed array has URL parameters
+#we just give the curled library a fixed name based on a moving iterator. TEMPORARY FIX. Planned implementation negates need for 
+#URLS entirely.
+ITERATOR=0
+
 read -ra ADDR <<< "$1"
 for uri in "${ADDR[@]}"; 
 do
+    PACKAGE_NAME="package-"$ITERATOR".whl"
+
     # Download whl
-    curl --remote-name $uri
+    curl -o $PACKAGE_NAME $uri
 
     # Checksum validation
     sha256sum $(basename $uri) > shasum.txt
     sha256sum -c shasum.txt
     rm shasum.txt
+
+    ((ITERATOR++))
 done
 
 ls -la

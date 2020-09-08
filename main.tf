@@ -298,9 +298,6 @@ resource "azurerm_api_management_api" "create_job_api" {
       }        
       EOT
   }
-  depends_on = [
-    databricks_notebook.notebook
-  ]
 }
 
 resource "azurerm_api_management_api" "invoke_notebook_api" {

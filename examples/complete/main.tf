@@ -75,4 +75,5 @@ module "terraform-databricks-sec-resources" {
   api_management_name                = azurerm_api_management.test_apim.name
   api_management_resource_group_name = azurerm_resource_group.test_rg.location
   data_lake_name                     = azurerm_storage_account.test_sa.name
+  service_principal_secret           = ""
 }
