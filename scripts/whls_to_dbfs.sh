@@ -5,7 +5,7 @@
 
 # NOTE: this assumes network connectivity to the provided URIs
 
-set -ex
+set -e
 
 echo "Downloading Packages."
 
@@ -22,7 +22,8 @@ ITERATOR=0
 read -ra ADDR <<< "$1"
 for uri in "${ADDR[@]}"; 
 do
-    PACKAGE_NAME="package-"$ITERATOR".whl"
+    #This is horrendous. Direct from storage will fix this.
+    PACKAGE_NAME="package-"$ITERATOR".0.0-py3-none-any.whl"
 
     # Download whl
     curl -o $PACKAGE_NAME $uri
