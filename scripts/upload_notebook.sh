@@ -4,9 +4,11 @@
 # $2 - The path and name to upload the notebook to in Databricks 
 # $3 - File path to Jupyter notebook
 
-set -e
+set -ex
 
 pwd
+
+ls -la $3
 
 BASE64_CONTENT="$(base64 < $3)"
 
