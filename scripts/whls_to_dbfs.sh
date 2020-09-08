@@ -5,7 +5,7 @@
 
 # NOTE: this assumes network connectivity to the provided URIs
 
-set -e
+set -ex
 
 echo "Downloading Packages."
 
