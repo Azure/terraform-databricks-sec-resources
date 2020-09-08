@@ -19,7 +19,7 @@ locals {
   #Upload Notebook locals
   notebook_upload_script_path = "${path.module}/scripts/upload_notebook.sh"
   notebook_content            = filebase64("${path.module}/${var.notebook_path}")
-  uploade_notebook_command    = join(" ", [local.notebook_upload_script_path, local.databricks_host, databricks_token.upload_auth_token.token_value, "/${var.notebook_name}", local.notebook_content])
+  upload_notebook_command    = join(" ", [local.notebook_upload_script_path, local.databricks_host, "/${var.notebook_name}", local.notebook_content])
 
   #Mount locals
   libraries_mount    = "libraries"
@@ -141,8 +141,14 @@ resource "databricks_cluster" "high_concurrency_cluster" {
 # If notebook_path given, upload local Jupyter notebook on deployment
 resource "null_resource" "upload_notebook" {
   provisioner "local-exec" {
-    command = local.uploade_notebook_command
+    command = local.upload_notebook_command
   }
+
+  #Passing env variable to avoid token leakage on apply
+  environment = {
+    DATABRICKS_TOKEN = "${databricks_token.upload_auth_token.token_value}"
+  }
+
   count = var.notebook_path == "" ? 0 : 1
 }
 

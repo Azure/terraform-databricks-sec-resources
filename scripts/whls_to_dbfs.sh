@@ -27,11 +27,6 @@ do
     # Download whl
     curl -o $PACKAGE_NAME $uri
 
-    # Checksum validation
-    sha256sum $(basename $uri) > shasum.txt
-    sha256sum -c shasum.txt
-    rm shasum.txt
-
     ((ITERATOR++))
 done
 
