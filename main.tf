@@ -19,7 +19,7 @@ locals {
   #Upload Notebook locals
   notebook_upload_script_path = "${path.module}/scripts/upload_notebook.sh"
   notebook_content            = filebase64("${path.module}/${var.notebook_path}")
-  uploade_notebook_command    = join(" ", [local.notebook_upload_script_path, local.databricks_host, local.databricks_token.upload_auth_token.token_value, "/${var.notebook_name}", local.notebook_content])
+  uploade_notebook_command    = join(" ", [local.notebook_upload_script_path, local.databricks_host, databricks_token.upload_auth_token.token_value, "/${var.notebook_name}", local.notebook_content])
 
   #Mount locals
   libraries_mount    = "libraries"
@@ -93,7 +93,7 @@ resource "databricks_azure_adls_gen2_mount" "data_mount" {
   initialize_file_system = true
 }
 
-resource "null_resource" "main" {
+resource "null_resource" "upload_whl" {
   provisioner "local-exec" {
     command = local.upload_whl_dbfs_command
   }
@@ -113,7 +113,7 @@ resource "databricks_cluster" "standard_cluster" {
   library {
     whl = "dbfs:/mnt/libraries/defaultpackages.wheelhouse.zip"
   }
-  depends_on = [time_sleep.wait, databricks_azure_adls_gen2_mount.libraries_mount, null_resource.main]
+  depends_on = [time_sleep.wait, databricks_azure_adls_gen2_mount.libraries_mount, null_resource.upload_whl]
 }
 
 # Create high concurrency cluster with AAD credential passthrough enabled
@@ -135,11 +135,11 @@ resource "databricks_cluster" "high_concurrency_cluster" {
   library {
     whl = "dbfs:/mnt/libraries/defaultpackages.wheelhouse.zip"
   }
-  depends_on = [time_sleep.wait, databricks_azure_adls_gen2_mount.libraries_mount, null_resource.main]
+  depends_on = [time_sleep.wait, databricks_azure_adls_gen2_mount.libraries_mount, null_resource.upload_whl]
 }
 
 # If notebook_path given, upload local Jupyter notebook on deployment
-resource "null_resource" "main" {
+resource "null_resource" "upload_notebook" {
   provisioner "local-exec" {
     command = local.uploade_notebook_command
   }
