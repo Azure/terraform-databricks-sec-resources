@@ -27,7 +27,7 @@ do
     # Download whl
     curl -o $PACKAGE_NAME $uri
 
-    ((ITERATOR++))
+    ITERATOR=$((ITERATOR+1))
 done
 
 ls -la
