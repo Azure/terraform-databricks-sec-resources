@@ -41,7 +41,7 @@ echo "Packages Zipped."
 
 ls -la
 
-#az storage blob upload --container-name "$3" --file "defaultpackages.wheelhouse.zip" --name "defaultpackages.wheelhouse.zip" --account-name "$2" --auth-mode "login" --subscription "$ARM_SUBSCRIPTION_ID"
+az storage blob upload --container-name "$3" --file "defaultpackages.wheelhouse.zip" --name "defaultpackages.wheelhouse.zip" --account-name "$2" --auth-mode "login" --subscription "$ARM_SUBSCRIPTION_ID"
 
 echo "defaultpackes.wheelhouse.zip Uploaded."
 
