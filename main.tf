@@ -9,12 +9,12 @@ provider "databricks" {
 }
 
 locals {
-  databricks_host            = format("%s%s", "https://", var.databricks_workspace.workspace_url)
+  databricks_host = format("%s%s", "https://", var.databricks_workspace.workspace_url)
 
   #Upload whl locals
-  whl_upload_script_path     = var.whl_upload_script_path == "" ? "${path.module}/scripts/whls_to_dbfs.sh" : var.whl_upload_script_path
-  packages                   = join(", ", var.cluster_default_packages)
-  upload_whl_dbfs_command    = join(" ", [local.whl_upload_script_path, "\"${local.packages}\"", var.data_lake_name, local.libraries_mount])
+  whl_upload_script_path  = var.whl_upload_script_path == "" ? "${path.module}/scripts/whls_to_dbfs.sh" : var.whl_upload_script_path
+  packages                = join(", ", var.cluster_default_packages)
+  upload_whl_dbfs_command = join(" ", [local.whl_upload_script_path, "\"${local.packages}\"", var.data_lake_name, local.libraries_mount])
 
   #Upload Notebook locals
   notebook_upload_script_path = "${path.module}/scripts/upload_notebook.sh"
@@ -22,8 +22,8 @@ locals {
   upload_notebook_command     = join(" ", [local.notebook_upload_script_path, local.databricks_host, "\"/${var.notebook_name}\"", local.notebook_content_path])
 
   #Mount locals
-  libraries_mount    = "libraries"
-  data_mount         = "data"
+  libraries_mount = "libraries"
+  data_mount      = "data"
 }
 
 module "naming" {
@@ -97,7 +97,7 @@ resource "null_resource" "upload_whl" {
   provisioner "local-exec" {
     command = local.upload_whl_dbfs_command
   }
-  count = join(", ", var.cluster_default_packages) != "" ? 1 : 0
+  count      = join(", ", var.cluster_default_packages) != "" ? 1 : 0
   depends_on = [databricks_azure_adls_gen2_mount.libraries_mount]
 }
 
@@ -111,7 +111,7 @@ resource "databricks_cluster" "standard_cluster" {
     max_workers = 3
   }
   library {
-    whl = "dbfs:/mnt/libraries/defaultpackages.wheelhouse.zip"
+    whl = "dbfs://mnt/libraries/defaultpackages.wheelhouse.zip"
   }
   depends_on = [time_sleep.wait, databricks_azure_adls_gen2_mount.libraries_mount, null_resource.upload_whl]
 }
@@ -133,7 +133,7 @@ resource "databricks_cluster" "high_concurrency_cluster" {
     "spark.databricks.pyspark.enableProcessIsolation" : true
   }
   library {
-    whl = "dbfs:/mnt/libraries/defaultpackages.wheelhouse.zip"
+    whl = "dbfs://mnt/libraries/defaultpackages.wheelhouse.zip"
   }
   depends_on = [time_sleep.wait, databricks_azure_adls_gen2_mount.libraries_mount, null_resource.upload_whl]
 }
