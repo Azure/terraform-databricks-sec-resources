@@ -111,7 +111,7 @@ resource "databricks_cluster" "standard_cluster" {
     max_workers = 3
   }
   library {
-    whl = "dbfs://mnt/libraries/defaultpackages.wheelhouse.zip"
+    whl = "dbfs:/mnt/libraries/defaultpackages.wheelhouse.zip"
   }
   depends_on = [time_sleep.wait, databricks_azure_adls_gen2_mount.libraries_mount, null_resource.upload_whl]
 }
@@ -133,7 +133,7 @@ resource "databricks_cluster" "high_concurrency_cluster" {
     "spark.databricks.pyspark.enableProcessIsolation" : true
   }
   library {
-    whl = "dbfs://mnt/libraries/defaultpackages.wheelhouse.zip"
+    whl = "dbfs:/mnt/libraries/defaultpackages.wheelhouse.zip"
   }
   depends_on = [time_sleep.wait, databricks_azure_adls_gen2_mount.libraries_mount, null_resource.upload_whl]
 }
