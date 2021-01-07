@@ -1,11 +1,9 @@
 provider "databricks" {
-  version = "0.2.9"
-  azure_auth = {
-    workspace_name         = var.databricks_workspace.name
-    resource_group         = var.databricks_workspace.resource_group_name
-    managed_resource_group = var.databricks_workspace.managed_resource_group_name
-    azure_region           = var.databricks_workspace.location
-  }
+  version                     = "0.2.9"
+  azure_workspace_resource_id = var.databricks_workspace.id
+  azure_client_id             = data.azurerm_client_config.current.client_id
+  azure_client_secret         = var.service_principal_secret
+  azure_tenant_id             = data.azurerm_client_config.current.tenant_id
 }
 
 locals {
