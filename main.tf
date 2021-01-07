@@ -1,5 +1,5 @@
 provider "databricks" {
-  version = "0.2.4"
+  version = "0.2.9"
   azure_auth = {
     workspace_name         = var.databricks_workspace.name
     resource_group         = var.databricks_workspace.resource_group_name
